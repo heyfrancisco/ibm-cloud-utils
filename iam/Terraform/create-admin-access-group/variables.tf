@@ -3,20 +3,18 @@
 ##############################################################################
 
 variable "ibmcloud_api_key" {
-  description = "IBM Cloud API Key associated with the account to provision resources to"
+  description = "IBM Cloud API Key associated with the account to provision resources to."
   type        = string
-  default     = ""
   sensitive   = true
 }
 
 variable "prefix" {
+  description = "A prefix for all resources to be created."
   type        = string
-  default     = ""
-  description = "A prefix for all resources to be created. If none provided a random prefix will be created"
 }
 
 variable "region" {
-  description = "IBM Cloud region where all resources will be provisioned (e.g. eu-es)"
+  description = "IBM Cloud region where all resources will be provisioned (e.g. eu-es)."
   default     = "eu-es"
 }
 
