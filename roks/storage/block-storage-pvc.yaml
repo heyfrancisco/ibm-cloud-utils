@@ -1,0 +1,29 @@
+## PVC NOTES:
+# (1) When using PVC with a StorageClass object we can dinamically provision
+# PVs without the need to create an actual PV.
+
+# (2) When you create a PVC, you specify a storage amount, the required access mode, and a storage
+# class to describe and classify the storage. The control loop in the RHOCP control node
+# watches for new PVCs, and binds the new PVC to an appropriate PV.
+# If an appropriate PV does not exist, then a provisioner for the storage class creates one.
+
+# (3) When using dynamic provisioning through a StorageClass, you cannot directly
+# specify the name of the automatically created PV. The system generates a unique name
+# with the format pvc-<uuid> to ensure uniqueness across the cluster
+
+## Run this PVC
+# $ oc apply -f block-storage-pvc.yaml
+
+## Verify the PVC was created with success
+# $ oc describe pvc <pvc_name>
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-block-storage-pvc # Enter a name for your PVC.
+spec:
+  storageClassName: ibmc-vpc-block-custom # Enter the storage class name that you selected earlier.
+  accessModes:
+    - ReadWriteOnce # ReadWriteOnce or ReadWriteOncePod
+  resources:
+    requests:
+      storage: 10Gi # Enter the size. Make sure that the size is supported in the profile that you chose.

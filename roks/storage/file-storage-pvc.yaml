@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-file-storage-pvc # Enter a name for your PVC.
+spec:
+  accessModes:
+    - ReadWriteMany # The file share can be mounted on multiple nodes and pods.
+  resources:
+    requests:
+      storage: 50Gi # Enter the size of the storage in gigabytes (Gi).
+  storageClassName: ibmc-vpc-file-min-iops # Enter the name of the storage class that you want to use.
