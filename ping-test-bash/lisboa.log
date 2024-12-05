@@ -1,0 +1,57 @@
+Fri Mar 15 16:48:32 WET 2024
+
+From Lisbon to Madrid
+round-trip min/avg/max/stddev = 68.591/70.365/76.078/2.200 ms
+
+From Lisbon to Frankfurt
+round-trip min/avg/max/stddev = 46.814/49.542/57.703/3.105 ms
+
+
+Fri Mar 15 16:50:47 WET 2024
+
+From Lisbon to Madrid
+round-trip min/avg/max/stddev = 68.886/73.051/78.052/2.912 ms
+
+From Lisbon to Frankfurt
+round-trip min/avg/max/stddev = 47.824/50.500/54.698/2.696 ms
+
+
+Fri Mar 15 16:52:04 WET 2024
+Starting ping from Lisbon to Madrid...
+
+From Lisbon to Madrid
+round-trip min/avg/max/stddev = 70.089/74.885/79.986/3.513 ms
+Ping to Madrid completed.
+Starting ping from Lisbon to Frankfurt...
+
+From Lisbon to Frankfurt
+round-trip min/avg/max/stddev = 47.470/51.883/68.148/5.319 ms
+Ping to Frankfurt completed.
+
+
+Fri Mar 15 16:54:56 WET 2024
+Starting ping from Lisbon to Madrid...
+
+From Lisbon to Madrid
+round-trip min/avg/max/stddev = 69.162/72.589/77.323/2.839 ms
+Ping to Madrid completed.
+Starting ping from Lisbon to Frankfurt...
+
+From Lisbon to Frankfurt
+round-trip min/avg/max/stddev = 47.347/52.468/88.475/9.969 ms
+Ping to Frankfurt completed.
+
+
+Thu Dec  5 14:03:32 WET 2024
+Starting ping from Lisbon to Madrid...
+
+From Lisbon to Madrid
+round-trip min/avg/max/stddev = 72.477/73.786/78.265/1.446 ms
+Ping to Madrid completed.
+Starting ping from Lisbon to Frankfurt...
+
+From Lisbon to Frankfurt
+round-trip min/avg/max/stddev = 47.975/76.561/130.526/32.237 ms
+Ping to Frankfurt completed.
+
+
