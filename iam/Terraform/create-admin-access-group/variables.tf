@@ -8,11 +8,6 @@ variable "ibmcloud_api_key" {
   sensitive   = true
 }
 
-variable "prefix" {
-  description = "A prefix for all resources to be created."
-  type        = string
-}
-
 variable "region" {
   description = "IBM Cloud region where all resources will be provisioned (e.g. eu-es)."
   default     = "eu-es"

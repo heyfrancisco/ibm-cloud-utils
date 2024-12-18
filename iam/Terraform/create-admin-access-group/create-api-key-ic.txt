@@ -1,0 +1,1 @@
+ibmcloud iam api-key-create MyKey -d "this is my API key" --file key_file
