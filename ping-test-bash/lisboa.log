@@ -55,3 +55,25 @@ round-trip min/avg/max/stddev = 47.975/76.561/130.526/32.237 ms
 Ping to Frankfurt completed.
 
 
+Mon Mar 31 12:06:49 WEST 2025
+Starting ping from Lisbon to Madrid...
+
+From Lisbon to Madrid
+round-trip min/avg/max/stddev = 72.575/77.191/82.311/3.148 ms
+Ping to Madrid completed.
+Starting ping from Lisbon to Frankfurt...
+
+From Lisbon to Frankfurt
+round-trip min/avg/max/stddev = 42.667/44.646/50.000/2.196 ms
+Ping to Frankfurt completed.
+
+
+Thu Jul 03 2025 16:51:55 GMT+0100 (Western European Summer Time)
+
+From Lisbon to Madrid
+round-trip min/avg/max/stddev = 65.430/66.937/72.850/2.242 ms
+
+From Lisbon to Frankfurt
+round-trip min/avg/max/stddev = 43.400/46.339/50.924/2.970 ms
+
+
