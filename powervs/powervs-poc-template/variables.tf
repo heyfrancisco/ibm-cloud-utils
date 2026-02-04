@@ -43,8 +43,8 @@ variable "region" {
   }
 }
 
-variable "resource_group_id" {
-  description = "ID of the resource group where all resources will be created"
+variable "resource_group_name" {
+  description = "Name of the resource group where all resources will be created"
   type        = string
 }
 
@@ -521,7 +521,7 @@ variable "ibmcloud_api_key" {
 #
 # 1. Required Variables:
 #    - prefix: Unique identifier for all resources
-#    - resource_group_id: Target resource group
+#    - resource_group_name: Target resource group name
 #    - powervs_ssh_key_name: SSH key name for PowerVS
 #    - powervs_ssh_public_key: SSH public key content
 #    - powervs_instance_image: PowerVS instance image

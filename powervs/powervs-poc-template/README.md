@@ -96,7 +96,7 @@ vi terraform.tfvars
 
 **Required Variables:**
 - `prefix`: Unique identifier for resources (max 20 chars)
-- `resource_group_id`: Target resource group ID
+- `resource_group_name`: Target resource group name
 - `powervs_ssh_key_name`: SSH key name
 - `powervs_ssh_public_key`: SSH public key content
 - `powervs_instance_image`: PowerVS instance image

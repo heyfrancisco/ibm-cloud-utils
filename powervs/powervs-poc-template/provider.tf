@@ -13,6 +13,16 @@
 #   terraform init
 ##############################################################################
 
+##############################################################################
+# Data Sources
+##############################################################################
+
+# Look up resource group by name
+data "ibm_resource_group" "resource_group" {
+  name = var.resource_group_name
+}
+
+##############################################################################
 # IBM Cloud Provider
 # Documentation: https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs
 provider "ibm" {

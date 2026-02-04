@@ -23,7 +23,7 @@ module "vpc" {
   source = "./modules/01-vpc"
 
   # Core Configuration
-  resource_group_id = var.resource_group_id
+  resource_group_id = data.ibm_resource_group.resource_group.id
   region            = var.region
   prefix            = var.prefix
   tags              = var.tags
@@ -57,7 +57,7 @@ module "vpn" {
   source = "./modules/02-vpn"
 
   # Core Configuration
-  resource_group_id = var.resource_group_id
+  resource_group_id = data.ibm_resource_group.resource_group.id
   prefix            = var.prefix
   tags              = var.tags
 
@@ -82,7 +82,7 @@ module "cos" {
   source = "./modules/03-cos"
 
   # Core Configuration
-  resource_group_id = var.resource_group_id
+  resource_group_id = data.ibm_resource_group.resource_group.id
   region            = var.region
   prefix            = var.prefix
   tags              = var.tags
@@ -119,7 +119,7 @@ module "transit_gateway" {
   source = "./modules/06-transit-gateway"
 
   # Core Configuration
-  resource_group_id = var.resource_group_id
+  resource_group_id = data.ibm_resource_group.resource_group.id
   region            = var.region
   prefix            = var.prefix
   tags              = var.tags
@@ -149,7 +149,7 @@ module "vpe_gateway" {
   source = "./modules/07-vpe-gateway"
 
   # Core Configuration
-  resource_group_id = var.resource_group_id
+  resource_group_id = data.ibm_resource_group.resource_group.id
   prefix            = var.prefix
   tags              = var.tags
 
@@ -177,7 +177,7 @@ module "powervs_workspace" {
   source = "./modules/04-powervs-workspace"
 
   # Core Configuration
-  resource_group_id = var.resource_group_id
+  resource_group_id = data.ibm_resource_group.resource_group.id
   prefix            = var.prefix
   tags              = var.tags
 
