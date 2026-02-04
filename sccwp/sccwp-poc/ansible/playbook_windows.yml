@@ -1,0 +1,33 @@
+- name: Install SCC Workload Protection Agent on Windows
+  hosts: windows
+  gather_facts: false
+
+  vars:
+    scc_access_key: ""
+    collector_url: "ingest.eu-es.security-compliance-secure.cloud.ibm.com"
+    api_url: "eu-es.security-compliance-secure.cloud.ibm.com"
+    installer_url: "https://download.sysdig.com/stable/sysdig-host-shield-latest.msi"
+
+  tasks:
+    - name: Wait for connection
+      wait_for_connection:
+        timeout: 300
+
+    - name: Download Sysdig MSI
+      win_get_url:
+        url: "{{ installer_url }}"
+        dest: "C:\\Windows\\Temp\\sysdig-host-shield-latest.msi"
+
+    - name: Install Sysdig Agent
+      win_package:
+        path: "C:\\Windows\\Temp\\sysdig-host-shield-latest.msi"
+        state: present
+        arguments: >
+          REGION=custom 
+          ACCESS_KEY={{ scc_access_key }} 
+          COLLECTOR_URL={{ collector_url }} 
+          COLLECTOR_PORT=6443 
+          API_URL={{ api_url }} 
+          VM_FEATURE_ENABLED=True 
+          POSTURE_FEATURE_ENABLED=True 
+          ACCEPT_TERMS_CONDITIONS=True 

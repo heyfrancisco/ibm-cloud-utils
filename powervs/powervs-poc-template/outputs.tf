@@ -1,0 +1,218 @@
+##############################################################################
+# Root Module Outputs
+#
+# This file aggregates outputs from all modules for easy reference.
+# Outputs are organized by module for better clarity.
+##############################################################################
+
+##############################################################################
+# VPC Outputs
+##############################################################################
+
+output "vpc_id" {
+  description = "ID of the VPC"
+  value       = module.vpc.vpc_id
+}
+
+output "vpc_crn" {
+  description = "CRN of the VPC"
+  value       = module.vpc.vpc_crn
+}
+
+output "vpc_name" {
+  description = "Name of the VPC"
+  value       = module.vpc.vpc_name
+}
+
+output "subnet_ids" {
+  description = "Map of subnet names to IDs"
+  value       = module.vpc.subnet_ids
+}
+
+output "subnet_zone_list" {
+  description = "List of subnet details"
+  value       = module.vpc.subnet_zone_list
+}
+
+output "security_group_ids" {
+  description = "Map of security group names to IDs"
+  value       = module.vpc.security_group_ids
+}
+
+output "vpn_gateway_id" {
+  description = "ID of VPN gateway (if enabled)"
+  value       = var.enable_vpn_gateway ? module.vpc.vpn_gateways_data[0].id : null
+}
+
+output "vpn_gateway_public_ips" {
+  description = "Public IPs of VPN gateway (if enabled)"
+  value       = var.enable_vpn_gateway ? module.vpc.vpn_gateway_public_ips : []
+}
+
+##############################################################################
+# VPN Outputs (Optional)
+##############################################################################
+
+output "vpn_connection_ids" {
+  description = "Map of VPN connection names to IDs"
+  value       = var.enable_vpn_gateway && length(var.vpn_connections) > 0 ? module.vpn[0].vpn_connection_ids : {}
+}
+
+output "vpn_connection_statuses" {
+  description = "Status of each VPN connection"
+  value       = var.enable_vpn_gateway && length(var.vpn_connections) > 0 ? module.vpn[0].vpn_connection_statuses : {}
+}
+
+##############################################################################
+# Cloud Object Storage Outputs
+##############################################################################
+
+output "cos_instance_id" {
+  description = "ID of the COS instance"
+  value       = module.cos.cos_instance_id
+}
+
+output "cos_instance_crn" {
+  description = "CRN of the COS instance"
+  value       = module.cos.cos_instance_crn
+}
+
+output "cos_instance_guid" {
+  description = "GUID of the COS instance"
+  value       = module.cos.cos_instance_guid
+}
+
+output "cos_bucket_name" {
+  description = "Name of the COS bucket (with suffix)"
+  value       = module.cos.bucket_name
+}
+
+output "cos_bucket_id" {
+  description = "ID of the COS bucket"
+  value       = module.cos.bucket_id
+}
+
+output "s3_endpoint_private" {
+  description = "Private endpoint for S3 API"
+  value       = module.cos.s3_endpoint_private
+}
+
+output "s3_endpoint_direct" {
+  description = "Direct endpoint for S3 API"
+  value       = module.cos.s3_endpoint_direct
+}
+
+##############################################################################
+# Transit Gateway Outputs (Optional)
+##############################################################################
+
+output "transit_gateway_id" {
+  description = "ID of Transit Gateway"
+  value       = var.enable_transit_gateway ? module.transit_gateway[0].tg_id : null
+}
+
+output "transit_gateway_crn" {
+  description = "CRN of Transit Gateway"
+  value       = var.enable_transit_gateway ? module.transit_gateway[0].tg_crn : null
+}
+
+output "transit_gateway_name" {
+  description = "Name of Transit Gateway"
+  value       = var.enable_transit_gateway ? module.transit_gateway[0].tg_name : null
+}
+
+##############################################################################
+# VPE Gateway Outputs (Optional)
+##############################################################################
+
+output "vpe_gateway_id" {
+  description = "ID of VPE gateway"
+  value       = var.enable_vpe_gateway ? module.vpe_gateway[0].vpe_gateway_id : null
+}
+
+output "vpe_gateway_ips" {
+  description = "IP addresses of VPE gateway"
+  value       = var.enable_vpe_gateway ? module.vpe_gateway[0].vpe_ips : []
+}
+
+output "vpe_gateway_name" {
+  description = "Name of VPE gateway"
+  value       = var.enable_vpe_gateway ? module.vpe_gateway[0].vpe_gateway_name : null
+}
+
+##############################################################################
+# PowerVS Workspace Outputs (Optional)
+##############################################################################
+
+output "powervs_workspace_id" {
+  description = "ID of PowerVS workspace"
+  value       = var.enable_powervs ? module.powervs_workspace[0].pi_workspace_id : null
+}
+
+output "powervs_workspace_guid" {
+  description = "GUID of PowerVS workspace"
+  value       = var.enable_powervs ? module.powervs_workspace[0].pi_workspace_guid : null
+}
+
+output "powervs_workspace_name" {
+  description = "Name of PowerVS workspace"
+  value       = var.enable_powervs ? module.powervs_workspace[0].pi_workspace_name : null
+}
+
+output "powervs_zone" {
+  description = "PowerVS zone"
+  value       = var.enable_powervs ? module.powervs_workspace[0].pi_zone : null
+}
+
+output "powervs_subnet_id" {
+  description = "ID of PowerVS private subnet"
+  value       = var.enable_powervs ? module.powervs_workspace[0].pi_private_subnet_1.id : null
+}
+
+output "powervs_subnet_name" {
+  description = "Name of PowerVS private subnet"
+  value       = var.enable_powervs ? module.powervs_workspace[0].pi_private_subnet_1.name : null
+}
+
+##############################################################################
+# PowerVS Instance Outputs (Optional)
+##############################################################################
+
+output "powervs_instance_id" {
+  description = "ID of PowerVS instance"
+  value       = var.enable_powervs && var.enable_powervs_instance ? module.powervs_instance[0].pi_instance_id : null
+}
+
+output "powervs_instance_name" {
+  description = "Name of PowerVS instance"
+  value       = var.enable_powervs && var.enable_powervs_instance ? module.powervs_instance[0].pi_instance_name : null
+}
+
+output "powervs_instance_private_ips" {
+  description = "Private IP addresses of PowerVS instance"
+  value       = var.enable_powervs && var.enable_powervs_instance ? module.powervs_instance[0].pi_instance_private_ips : []
+}
+
+output "powervs_instance_primary_ip" {
+  description = "Primary IP address of PowerVS instance"
+  value       = var.enable_powervs && var.enable_powervs_instance ? module.powervs_instance[0].pi_instance_primary_ip : null
+}
+
+##############################################################################
+# Summary Output
+##############################################################################
+
+output "deployment_summary" {
+  description = "Summary of deployed resources"
+  value = {
+    region                = var.region
+    prefix                = var.prefix
+    vpc_enabled           = true
+    vpn_enabled           = var.enable_vpn_gateway
+    cos_enabled           = true
+    transit_gateway_enabled = var.enable_transit_gateway
+    vpe_gateway_enabled   = var.enable_vpe_gateway
+    powervs_enabled       = var.enable_powervs
+    powervs_instance_enabled = var.enable_powervs && var.enable_powervs_instance
+  }
+}

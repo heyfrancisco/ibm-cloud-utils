@@ -1,0 +1,96 @@
+# IBM Cloud Terraform Landing Zone - Git Ignore File
+
+# Terraform files
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+*.tfvars
+!terraform.tfvars.template
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Sensitive files
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+id_rsa*
+*.ppk
+
+# IBM Cloud credentials
+.bluemix/
+.ibmcloud/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Log files
+*.log
+logs/
+*.out
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# OS files
+Thumbs.db
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Documentation build files
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+
+# Package files
+node_modules/
+*.zip
+*.tar.gz
+*.tgz
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+
+# Output files
+deployment-outputs.txt
+*.csv
+*.xlsx
+
+# Custom exclusions
+# Add any project-specific files to ignore below

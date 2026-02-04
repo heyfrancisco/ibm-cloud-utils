@@ -1,0 +1,291 @@
+##############################################################################
+# Terraform Variables Template
+#
+# This template provides example values for all variables used in the
+# IBM Cloud Landing Zone deployment.
+#
+# INSTRUCTIONS:
+# 1. Copy this file to terraform.tfvars:
+#    cp terraform.tfvars.template terraform.tfvars
+#
+# 2. Fill in the required values (marked with <REQUIRED>)
+#
+# 3. Customize optional values as needed
+#
+# 4. NEVER commit terraform.tfvars to version control
+#    Add terraform.tfvars to .gitignore
+#
+# 5. For sensitive values, consider using:
+#    - Environment variables
+#    - IBM Cloud Secrets Manager
+#    - Terraform Cloud/Enterprise
+##############################################################################
+
+##############################################################################
+# Global Configuration
+##############################################################################
+
+# Unique prefix for all resource names (max 20 characters)
+# Example: "myproject", "dev-app", "prod-landing"
+prefix = "<REQUIRED>"  # e.g., "myproject"
+
+# IBM Cloud region for VPC and regional resources
+# Options: us-south, us-east, eu-gb, eu-de, jp-tok, jp-osa, au-syd, ca-tor, br-sao
+region = "us-south"
+
+# Resource group ID where all resources will be created
+# Get ID with: ibmcloud resource groups
+resource_group_id = "<REQUIRED>"  # e.g., "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
+
+# Tags for resource organization and cost tracking
+tags = [
+  "env:dev",
+  "project:landing-zone",
+  "managed-by:terraform",
+  "owner:your-team"
+]
+
+##############################################################################
+# VPC Configuration
+##############################################################################
+
+# VPC name suffix (will be prefixed with var.prefix)
+vpc_name = "vpc"
+
+# Availability zone for VPC resources
+# Must be in the selected region (e.g., us-south-1, us-south-2, us-south-3)
+vpc_zone = "us-south-1"
+
+# CIDR block for VPC subnet
+# Ensure it doesn't conflict with other networks
+subnet_cidr = "10.10.10.0/24"
+
+# Enable public gateway for outbound internet access
+enable_public_gateway = true
+
+##############################################################################
+# VPN Configuration (Optional)
+##############################################################################
+
+# Enable VPN gateway for site-to-site connectivity
+enable_vpn = false
+
+# VPN connections configuration
+# Uncomment and configure if enable_vpn = true
+# vpn_connections = [
+#   {
+#     name          = "office-vpn"
+#     peer_address  = "203.0.113.1"                    # <REQUIRED> Peer gateway public IP
+#     preshared_key = "<GENERATE_STRONG_KEY_32_CHARS>" # <REQUIRED> Min 32 characters
+#     local_cidrs   = ["10.10.10.0/24"]                # VPC CIDR
+#     peer_cidrs    = ["192.168.1.0/24"]               # On-premises CIDR
+#   }
+# ]
+
+# VPN gateway mode: "route" (recommended) or "policy"
+vpn_mode = "route"
+
+# IKE protocol version: 2 (recommended) or 1
+ike_version = 2
+
+##############################################################################
+# Cloud Object Storage Configuration
+##############################################################################
+
+# COS instance name suffix
+cos_instance_name = "cos"
+
+# COS service plan: "standard" or "cos-one-rate-plan"
+cos_plan = "standard"
+
+# COS bucket name suffix
+cos_bucket_name = "bucket"
+
+# Storage class: "standard", "vault", "cold", or "smart"
+cos_storage_class = "standard"
+
+# Enable encryption for COS bucket
+cos_encryption_enabled = true
+
+# KMS key CRN for COS encryption (required if cos_encryption_enabled = true)
+# Get from Key Protect or Hyper Protect Crypto Services
+# kms_key_crn = "crn:v1:bluemix:public:kms:us-south:a/...:key:..."
+
+##############################################################################
+# PowerVS Workspace Configuration
+##############################################################################
+
+# PowerVS zone (must be compatible with VPC region)
+# Options: dal10, dal12, us-south, us-east, wdc06, wdc07, etc.
+# See: https://cloud.ibm.com/docs/power-iaas?topic=power-iaas-creating-power-virtual-server
+powervs_zone = "dal10"
+
+# PowerVS workspace name suffix
+powervs_workspace_name = "powervs-workspace"
+
+# PowerVS private subnet name
+powervs_subnet_name = "powervs-subnet"
+
+# CIDR block for PowerVS private subnet
+# Must not conflict with VPC or other networks
+powervs_subnet_cidr = "192.168.100.0/24"
+
+# DNS servers for PowerVS subnet
+powervs_dns_servers = ["8.8.8.8", "8.8.4.4"]
+
+# SSH key name for PowerVS instances
+powervs_ssh_key_name = "<REQUIRED>"  # e.g., "myproject-ssh-key"
+
+# SSH public key content
+# Generate with: ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+# Get public key: cat ~/.ssh/id_rsa.pub
+powervs_ssh_public_key = "<REQUIRED>"  # e.g., "ssh-rsa AAAAB3NzaC1yc2EA..."
+
+##############################################################################
+# PowerVS Instance Configuration
+##############################################################################
+
+# PowerVS instance name suffix
+powervs_instance_name = "lpar"
+
+# PowerVS instance image
+# List available images: ibmcloud pi images --json
+# Examples: "IBMi-75-03", "SLES15-SP4", "RHEL8-SP6"
+powervs_instance_image = "<REQUIRED>"  # e.g., "SLES15-SP4"
+
+# Number of processors (can be fractional)
+# Examples: "0.25", "0.5", "1", "2"
+powervs_instance_processors = "0.5"
+
+# Memory in GB
+powervs_instance_memory = "4"
+
+# Processor type: "shared" (recommended for dev), "capped", or "dedicated"
+powervs_instance_proc_type = "shared"
+
+# System type (depends on zone availability)
+# Examples: "s922", "e980", "s1022"
+powervs_instance_sys_type = "s922"
+
+# Storage tier: "tier3" (standard) or "tier1" (high performance)
+powervs_storage_tier = "tier3"
+
+# Storage size in GB
+powervs_storage_size = "100"
+
+##############################################################################
+# Transit Gateway Configuration
+##############################################################################
+
+# Transit Gateway name suffix
+transit_gateway_name = "tgw"
+
+# Transit Gateway location: "local" (same region) or "global" (cross-region)
+transit_gateway_location = "local"
+
+# Enable global routing (required for cross-region connectivity)
+enable_global_routing = false
+
+##############################################################################
+# VPE Gateway Configuration
+##############################################################################
+
+# VPE Gateway name suffix
+vpe_gateway_name = "vpe-cos"
+
+##############################################################################
+# Example Configurations
+##############################################################################
+
+# EXAMPLE 1: Development Environment
+# -----------------------------------
+# prefix                = "dev-app"
+# region                = "us-south"
+# vpc_zone              = "us-south-1"
+# subnet_cidr           = "10.10.10.0/24"
+# enable_vpn            = false
+# powervs_zone          = "dal10"
+# powervs_subnet_cidr   = "192.168.100.0/24"
+# powervs_instance_processors = "0.5"
+# powervs_instance_memory     = "4"
+# powervs_storage_tier  = "tier3"
+
+# EXAMPLE 2: Production Environment with VPN
+# -------------------------------------------
+# prefix                = "prod-app"
+# region                = "us-south"
+# vpc_zone              = "us-south-1"
+# subnet_cidr           = "10.20.10.0/24"
+# enable_vpn            = true
+# vpn_connections = [
+#   {
+#     name          = "hq-vpn"
+#     peer_address  = "203.0.113.1"
+#     preshared_key = "your-strong-32-character-key-here"
+#     local_cidrs   = ["10.20.10.0/24"]
+#     peer_cidrs    = ["192.168.0.0/16"]
+#   }
+# ]
+# powervs_zone          = "dal10"
+# powervs_subnet_cidr   = "192.168.200.0/24"
+# powervs_instance_processors = "2"
+# powervs_instance_memory     = "16"
+# powervs_storage_tier  = "tier1"
+# cos_encryption_enabled = true
+# kms_key_crn           = "crn:v1:bluemix:public:kms:..."
+
+##############################################################################
+# Security Best Practices
+##############################################################################
+#
+# 1. Never commit terraform.tfvars to version control
+#    Add to .gitignore: echo "terraform.tfvars" >> .gitignore
+#
+# 2. Use strong VPN preshared keys (minimum 32 characters)
+#    Generate with: openssl rand -base64 32
+#
+# 3. Rotate SSH keys regularly
+#    Generate new keys and update PowerVS instances
+#
+# 4. Enable encryption for COS buckets
+#    Use Key Protect or Hyper Protect Crypto Services
+#
+# 5. Use appropriate tags for cost tracking
+#    Include: environment, project, owner, cost-center
+#
+# 6. Review and restrict CIDR ranges
+#    Ensure no conflicts with existing networks
+#
+# 7. Use IBM Cloud Secrets Manager for sensitive values
+#    Store API keys, passwords, and certificates securely
+#
+##############################################################################
+
+##############################################################################
+# Getting Required Values
+##############################################################################
+#
+# Resource Group ID:
+#   ibmcloud resource groups
+#   ibmcloud resource group <group-name> --id
+#
+# Available Regions:
+#   ibmcloud regions
+#
+# Available Zones:
+#   ibmcloud is zones <region>
+#
+# PowerVS Zones:
+#   ibmcloud pi service-list
+#
+# PowerVS Images:
+#   ibmcloud pi images --json
+#
+# Generate SSH Key:
+#   ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+#   cat ~/.ssh/id_rsa.pub
+#
+# Generate VPN Preshared Key:
+#   openssl rand -base64 32
+#
+##############################################################################

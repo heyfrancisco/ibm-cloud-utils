@@ -1,0 +1,517 @@
+##############################################################################
+# Root Module Variables
+#
+# This file defines all variables used across the landing zone deployment.
+# Variables are organized by category for better maintainability.
+#
+# Usage:
+#   1. Copy terraform.tfvars.template to terraform.tfvars
+#   2. Fill in required values
+#   3. Review and customize optional values
+##############################################################################
+
+##############################################################################
+# Global Variables
+##############################################################################
+
+variable "prefix" {
+  description = "Prefix for all resource names. Must be 20 characters or less."
+  type        = string
+
+  validation {
+    condition     = length(var.prefix) <= 20 && length(var.prefix) > 0
+    error_message = "Prefix must be between 1 and 20 characters."
+  }
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.prefix))
+    error_message = "Prefix must contain only lowercase letters, numbers, and hyphens."
+  }
+}
+
+variable "region" {
+  description = "IBM Cloud region for VPC and regional resources (e.g., us-south, us-east, eu-gb)"
+  type        = string
+  default     = "us-south"
+
+  validation {
+    condition = contains([
+      "us-south", "us-east", "eu-gb", "eu-de", "jp-tok", "jp-osa",
+      "au-syd", "ca-tor", "br-sao"
+    ], var.region)
+    error_message = "Region must be a valid IBM Cloud region."
+  }
+}
+
+variable "resource_group_id" {
+  description = "ID of the resource group where all resources will be created"
+  type        = string
+}
+
+variable "tags" {
+  description = "List of tags for resource organization and cost tracking"
+  type        = list(string)
+  default     = ["env:dev", "project:landing-zone", "managed-by:terraform"]
+}
+
+##############################################################################
+# VPC Variables
+##############################################################################
+
+variable "vpc_name" {
+  description = "Name suffix for the VPC (will be prefixed with var.prefix)"
+  type        = string
+  default     = "vpc"
+}
+
+variable "vpc_zone" {
+  description = "Availability zone for VPC resources (e.g., us-south-1, us-south-2)"
+  type        = string
+  default     = "us-south-1"
+}
+
+variable "subnet_cidr" {
+  description = "CIDR block for the VPC subnet"
+  type        = string
+  default     = "10.10.10.0/24"
+
+  validation {
+    condition     = can(cidrhost(var.subnet_cidr, 0))
+    error_message = "Subnet CIDR must be a valid IPv4 CIDR block."
+  }
+}
+
+variable "vpc_cidr" {
+  description = "CIDR block for the VPC address prefix"
+  type        = string
+  default     = "10.10.0.0/16"
+
+  validation {
+    condition     = can(cidrhost(var.vpc_cidr, 0))
+    error_message = "VPC CIDR must be a valid IPv4 CIDR block."
+  }
+}
+
+variable "enable_public_gateway" {
+  description = "Enable public gateway for subnet (allows outbound internet access)"
+  type        = bool
+  default     = true
+}
+
+variable "enable_vpn_gateway" {
+  description = "Enable VPN gateway creation in VPC"
+  type        = bool
+  default     = false
+}
+
+variable "clean_default_sg_acl" {
+  description = "Remove default security group and ACL rules for better security"
+  type        = bool
+  default     = true
+}
+
+variable "enable_vpc_flow_logs" {
+  description = "Enable VPC flow logs for audit and troubleshooting"
+  type        = bool
+  default     = false
+}
+
+variable "create_vpn_routes" {
+  description = "Create VPC routes for VPN traffic"
+  type        = bool
+  default     = true
+}
+
+##############################################################################
+# VPN Variables (Optional)
+##############################################################################
+
+variable "enable_vpn" {
+  description = "Enable VPN gateway deployment for site-to-site connectivity"
+  type        = bool
+  default     = false
+}
+
+variable "vpn_connections" {
+  description = "List of VPN connections to create. Each connection requires peer details."
+  type = list(object({
+    name          = string
+    peer_address  = string
+    preshared_key = string
+    local_cidrs   = list(string)
+    peer_cidrs    = list(string)
+  }))
+  default = []
+
+  validation {
+    condition     = alltrue([for conn in var.vpn_connections : length(conn.preshared_key) >= 32])
+    error_message = "VPN preshared keys must be at least 32 characters for security."
+  }
+}
+
+variable "vpn_mode" {
+  description = "VPN gateway mode: 'route' for route-based VPN or 'policy' for policy-based VPN"
+  type        = string
+  default     = "route"
+
+  validation {
+    condition     = contains(["route", "policy"], var.vpn_mode)
+    error_message = "VPN mode must be either 'route' or 'policy'."
+  }
+}
+
+variable "ike_version" {
+  description = "IKE protocol version (1 or 2). Version 2 is recommended for better security."
+  type        = number
+  default     = 2
+
+  validation {
+    condition     = contains([1, 2], var.ike_version)
+    error_message = "IKE version must be 1 or 2."
+  }
+}
+
+##############################################################################
+# Cloud Object Storage Variables
+##############################################################################
+
+variable "cos_instance_name" {
+  description = "Name suffix for COS instance (will be prefixed with var.prefix)"
+  type        = string
+  default     = "cos"
+}
+
+variable "cos_plan" {
+  description = "COS service plan: 'standard' or 'cos-one-rate-plan'"
+  type        = string
+  default     = "standard"
+
+  validation {
+    condition     = contains(["standard", "cos-one-rate-plan"], var.cos_plan)
+    error_message = "COS plan must be 'standard' or 'cos-one-rate-plan'."
+  }
+}
+
+variable "cos_bucket_name" {
+  description = "Name suffix for COS bucket (will be prefixed with var.prefix)"
+  type        = string
+  default     = "bucket"
+}
+
+variable "cos_storage_class" {
+  description = "Storage class for COS bucket: standard, vault, cold, or smart"
+  type        = string
+  default     = "standard"
+
+  validation {
+    condition     = contains(["standard", "vault", "cold", "smart"], var.cos_storage_class)
+    error_message = "Storage class must be standard, vault, cold, or smart."
+  }
+}
+
+variable "cos_encryption_enabled" {
+  description = "Enable encryption for COS bucket using Key Protect or HPCS"
+  type        = bool
+  default     = true
+}
+
+
+variable "cos_archive_days" {
+  description = "Number of days before archiving objects to Glacier (0 to disable)"
+  type        = number
+  default     = 90
+}
+
+variable "cos_expire_days" {
+  description = "Number of days before expiring (deleting) objects (0 to disable)"
+  type        = number
+  default     = 365
+}
+
+variable "cos_abort_multipart_days" {
+  description = "Number of days before aborting incomplete multipart uploads"
+  type        = number
+  default     = 7
+}
+
+variable "cos_enable_object_versioning" {
+  description = "Enable object versioning for COS bucket"
+  type        = bool
+  default     = false
+}
+
+variable "cos_enable_retention" {
+  description = "Enable retention policy for COS bucket"
+  type        = bool
+  default     = false
+}
+
+variable "cos_enable_activity_tracker_read_events" {
+  description = "Enable Activity Tracker for read data events"
+  type        = bool
+  default     = true
+}
+
+variable "cos_enable_activity_tracker_write_events" {
+  description = "Enable Activity Tracker for write data events"
+  type        = bool
+  default     = true
+}
+
+variable "cos_force_delete" {
+  description = "Allow bucket deletion even with objects (useful for dev/test)"
+  type        = bool
+  default     = true
+}
+
+variable "kms_key_crn" {
+  description = "CRN of KMS key for COS encryption (required if cos_encryption_enabled is true)"
+  type        = string
+  default     = null
+}
+
+##############################################################################
+# PowerVS Workspace Variables
+##############################################################################
+
+variable "powervs_zone" {
+  description = "PowerVS zone (e.g., dal10, dal12, us-south, us-east, etc.)"
+  type        = string
+  default     = "dal10"
+}
+
+variable "powervs_workspace_name" {
+  description = "Name suffix for PowerVS workspace (will be prefixed with var.prefix)"
+  type        = string
+  default     = "powervs-workspace"
+}
+
+variable "powervs_subnet_name" {
+  description = "Name for PowerVS private subnet"
+  type        = string
+  default     = "powervs-subnet"
+}
+
+variable "powervs_subnet_cidr" {
+  description = "CIDR block for PowerVS private subnet"
+  type        = string
+  default     = "192.168.100.0/24"
+
+  validation {
+    condition     = can(cidrhost(var.powervs_subnet_cidr, 0))
+    error_message = "PowerVS subnet CIDR must be a valid IPv4 CIDR block."
+  }
+}
+
+variable "powervs_dns_servers" {
+  description = "List of DNS servers for PowerVS subnet"
+  type        = list(string)
+  default     = ["8.8.8.8", "8.8.4.4"]
+}
+
+variable "powervs_ssh_key_name" {
+  description = "Name for PowerVS SSH key"
+  type        = string
+}
+
+variable "powervs_ssh_public_key" {
+  description = "Public SSH key content for PowerVS instance access"
+  type        = string
+  sensitive   = true
+}
+
+##############################################################################
+# PowerVS Instance Variables
+##############################################################################
+
+variable "powervs_instance_name" {
+  description = "Name suffix for PowerVS LPAR instance (will be prefixed with var.prefix)"
+  type        = string
+  default     = "lpar"
+}
+
+variable "powervs_instance_image" {
+  description = "Image ID or name for PowerVS instance (e.g., 'IBMi-75-03', 'SLES15-SP4')"
+  type        = string
+}
+
+variable "powervs_instance_processors" {
+  description = "Number of processors for PowerVS instance (can be fractional, e.g., '0.5')"
+  type        = string
+  default     = "0.5"
+}
+
+variable "powervs_instance_memory" {
+  description = "Memory in GB for PowerVS instance"
+  type        = string
+  default     = "4"
+}
+
+variable "powervs_instance_proc_type" {
+  description = "Processor type: 'shared', 'capped', or 'dedicated'"
+  type        = string
+  default     = "shared"
+
+  validation {
+    condition     = contains(["shared", "capped", "dedicated"], var.powervs_instance_proc_type)
+    error_message = "Processor type must be 'shared', 'capped', or 'dedicated'."
+  }
+}
+
+variable "powervs_instance_sys_type" {
+  description = "System type for PowerVS instance (e.g., 's922', 'e980')"
+  type        = string
+  default     = "s922"
+}
+
+variable "powervs_storage_tier" {
+  description = "Storage tier for PowerVS: 'tier1' (high performance) or 'tier3' (standard)"
+  type        = string
+  default     = "tier3"
+
+  validation {
+    condition     = contains(["tier1", "tier3"], var.powervs_storage_tier)
+    error_message = "Storage tier must be 'tier1' or 'tier3'."
+  }
+}
+
+variable "enable_transit_gateway" {
+  description = "Enable Transit Gateway deployment for network connectivity"
+  type        = bool
+  default     = true
+}
+
+variable "enable_prefix_filters" {
+  description = "Enable prefix filtering for Transit Gateway route control"
+  type        = bool
+  default     = false
+}
+
+
+variable "powervs_storage_size" {
+  description = "Storage size in GB for PowerVS instance"
+  type        = string
+  default     = "100"
+}
+
+##############################################################################
+# Transit Gateway Variables
+##############################################################################
+
+
+variable "enable_vpe_gateway" {
+  description = "Enable VPE Gateway for private COS access"
+  type        = bool
+  default     = true
+}
+
+variable "vpe_reserve_ips" {
+  description = "Reserve specific IPs for VPE gateway"
+  type        = bool
+  default     = false
+}
+
+variable "enable_powervs" {
+  description = "Enable PowerVS workspace and instance deployment"
+  type        = bool
+  default     = true
+}
+
+variable "enable_powervs_instance" {
+  description = "Enable PowerVS instance creation (requires enable_powervs = true)"
+  type        = bool
+  default     = true
+}
+
+variable "powervs_custom_image_1" {
+  description = "Custom image to import into PowerVS workspace"
+  type = object({
+    name       = string
+    source_url = string
+  })
+  default = null
+}
+
+variable "powervs_instance_user_data" {
+  description = "Cloud-init user data for PowerVS instance initialization"
+  type        = string
+  default     = null
+}
+
+variable "transit_gateway_name" {
+  description = "Name suffix for Transit Gateway (will be prefixed with var.prefix)"
+  type        = string
+  default     = "tgw"
+}
+
+variable "transit_gateway_location" {
+  description = "Location for Transit Gateway: 'local' (same region) or 'global' (cross-region)"
+  type        = string
+  default     = "local"
+
+  validation {
+    condition     = contains(["local", "global"], var.transit_gateway_location)
+    error_message = "Transit Gateway location must be 'local' or 'global'."
+  }
+}
+
+variable "enable_global_routing" {
+  description = "Enable global routing for Transit Gateway (required for cross-region connectivity)"
+  type        = bool
+  default     = false
+}
+
+##############################################################################
+# VPE Gateway Variables
+##############################################################################
+
+variable "vpe_gateway_name" {
+  description = "Name suffix for VPE Gateway (will be prefixed with var.prefix)"
+  type        = string
+  default     = "vpe-cos"
+}
+
+##############################################################################
+# IBM Cloud API Key
+##############################################################################
+
+variable "ibmcloud_api_key" {
+   description = "IBM Cloud API key (alternatively use IC_API_KEY environment variable)"
+   type        = string
+   sensitive   = true
+   default     = null
+}
+
+##############################################################################
+# Variable Usage Notes
+##############################################################################
+#
+# 1. Required Variables:
+#    - prefix: Unique identifier for all resources
+#    - resource_group_id: Target resource group
+#    - powervs_ssh_key_name: SSH key name for PowerVS
+#    - powervs_ssh_public_key: SSH public key content
+#    - powervs_instance_image: PowerVS instance image
+#
+# 2. Optional Variables:
+#    - All other variables have sensible defaults
+#    - Customize based on your requirements
+#    - Review security settings carefully
+#
+# 3. Sensitive Variables:
+#    - powervs_ssh_public_key: Marked as sensitive
+#    - vpn_connections[].preshared_key: Contains sensitive data
+#    - Never commit terraform.tfvars to version control
+#
+# 4. Validation Rules:
+#    - Prefix length and format validated
+#    - CIDR blocks validated for correct format
+#    - Enum values validated against allowed options
+#    - VPN preshared key length enforced (min 32 chars)
+#
+# 5. Naming Convention:
+#    - All resource names follow: ${var.prefix}-${resource_type}-${identifier}
+#    - Ensures consistent and predictable naming
+#    - Facilitates resource identification and management
+#
+##############################################################################
