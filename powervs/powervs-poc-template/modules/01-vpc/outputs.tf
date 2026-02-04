@@ -27,24 +27,19 @@ output "subnet_zone_list" {
   value       = module.landing_zone_vpc.subnet_zone_list
 }
 
-output "security_group_ids" {
-  description = "Map of security group names to IDs"
-  value       = module.landing_zone_vpc.security_group_ids
-}
-
 output "security_group_details" {
-  description = "List of security group details"
+  description = "Details of security group"
   value       = module.landing_zone_vpc.security_group_details
 }
 
-output "network_acl_ids" {
-  description = "Map of network ACL names to IDs"
-  value       = module.landing_zone_vpc.network_acl_ids
+output "network_acls" {
+  description = "List of shortnames and IDs of network ACLs"
+  value       = module.landing_zone_vpc.network_acls
 }
 
-output "public_gateway_ids" {
-  description = "Map of public gateway names to IDs"
-  value       = module.landing_zone_vpc.public_gateway_ids
+output "public_gateways" {
+  description = "Map of public gateways by zone"
+  value       = module.landing_zone_vpc.public_gateways
 }
 
 output "vpn_gateways_data" {
