@@ -64,11 +64,12 @@ module "cos" {
 
   # Lifecycle Policies
   # Archive data to Glacier after specified days
-  archive_days = var.archive_days
+  archive_days = var.archive_days > 0 ? var.archive_days : null
   archive_type = var.archive_days > 0 ? "Glacier" : null
   
   # Expire (delete) data after specified days
-  expire_days = var.expire_days
+  # Set to null if 0 (disabled), as the provider requires values in range 1-3650
+  expire_days = var.expire_days > 0 ? var.expire_days : null
 
   # Optional Features
   object_versioning_enabled = var.enable_object_versioning

@@ -81,31 +81,38 @@ module "landing_zone_vpc" {
   ]
 
   # Security Group Configuration
-  security_group_rules = [
-    {
-      name      = "allow-inbound-ssh"
-      direction = "inbound"
-      remote    = "0.0.0.0/0"
-      tcp = {
-        port_min = 22
-        port_max = 22
-      }
-    },
-    {
-      name      = "allow-inbound-https"
-      direction = "inbound"
-      remote    = "0.0.0.0/0"
-      tcp = {
-        port_min = 443
-        port_max = 443
-      }
-    },
-    {
-      name      = "allow-outbound-all"
-      direction = "outbound"
-      remote    = "0.0.0.0/0"
-    }
-  ]
+  # Note: security_group_rules cannot be set when clean_default_sg_acl is true
+  # The module will clean the default security group when clean_default_sg_acl = true
+  # If you need custom security group rules, set clean_default_sg_acl = false
+  # and uncomment the security_group_rules below:
+  #
+  # security_group_rules = [
+  #   {
+  #     name      = "allow-inbound-ssh"
+  #     direction = "inbound"
+  #     remote    = "0.0.0.0/0"
+  #     tcp = {
+  #       port_min = 22
+  #       port_max = 22
+  #     }
+  #   },
+  #   {
+  #     name      = "allow-inbound-https"
+  #     direction = "inbound"
+  #     remote    = "0.0.0.0/0"
+  #     tcp = {
+  #       port_min = 443
+  #       port_max = 443
+  #     }
+  #   },
+  #   {
+  #     name      = "allow-outbound-all"
+  #     direction = "outbound"
+  #     remote    = "0.0.0.0/0"
+  #   }
+  # ]
+
+  clean_default_sg_acl = var.clean_default_sg_acl
 
   # VPN Gateway Configuration
   # Creates a route-based VPN gateway attached to the subnet
@@ -117,10 +124,6 @@ module "landing_zone_vpc" {
       connections = []
     }
   ] : []
-
-  # Security Best Practices
-  # Remove permissive default security group and ACL rules
-  clean_default_sg_acl = var.clean_default_sg_acl
 
   # VPC Flow Logs (optional, can be enabled for audit and troubleshooting)
   enable_vpc_flow_logs = var.enable_vpc_flow_logs
