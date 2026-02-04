@@ -1,6 +1,6 @@
-# IBM Cloud Terraform Landing Zone
+# IBM Cloud - PowerVS POC Template
 
-A comprehensive Terraform-based landing zone for IBM Cloud that creates a hybrid cloud infrastructure connecting VPC with PowerVS workloads through Transit Gateway, with secure VPN access and private Cloud Object Storage connectivity.
+A comprehensive tf-based landing zone for IBM Cloud that creates a hybrid cloud infrastructure connecting VPC with PowerVS workloads through Transit Gateway, with secure VPN access and private Cloud Object Storage connectivity.
 
 ## 🏗️ Architecture Overview
 

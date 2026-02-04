@@ -1,4 +1,4 @@
-# IBM Cloud Terraform Landing Zone - Implementation Plan
+# PowerVS POC Template Implementation Plan
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
