@@ -32,6 +32,11 @@ output "security_group_details" {
   value       = module.landing_zone_vpc.security_group_details
 }
 
+output "security_group_ids" {
+  description = "Map of security group names to IDs"
+  value       = { for sg in module.landing_zone_vpc.security_group_details : sg.name => sg.id }
+}
+
 output "network_acls" {
   description = "List of shortnames and IDs of network ACLs"
   value       = module.landing_zone_vpc.network_acls
