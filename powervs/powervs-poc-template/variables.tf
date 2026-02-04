@@ -32,12 +32,12 @@ variable "prefix" {
 variable "region" {
   description = "IBM Cloud region for VPC and regional resources (e.g., us-south, us-east, eu-gb)"
   type        = string
-  default     = "us-south"
+  default     = "eu-es"
 
   validation {
     condition = contains([
       "us-south", "us-east", "eu-gb", "eu-de", "jp-tok", "jp-osa",
-      "au-syd", "ca-tor", "br-sao"
+      "au-syd", "ca-tor", "br-sao", "eu-es"
     ], var.region)
     error_message = "Region must be a valid IBM Cloud region."
   }
@@ -51,7 +51,7 @@ variable "resource_group_id" {
 variable "tags" {
   description = "List of tags for resource organization and cost tracking"
   type        = list(string)
-  default     = ["env:dev", "project:landing-zone", "managed-by:terraform"]
+  default     = ["env:poc"]
 }
 
 ##############################################################################
@@ -65,9 +65,9 @@ variable "vpc_name" {
 }
 
 variable "vpc_zone" {
-  description = "Availability zone for VPC resources (e.g., us-south-1, us-south-2)"
+  description = "Availability zone for VPC resources (e.g., eu-es-1, eu-es-2)"
   type        = string
-  default     = "us-south-1"
+  default     = "eu-es-1"
 }
 
 variable "subnet_cidr" {
@@ -133,7 +133,27 @@ variable "enable_vpn" {
 }
 
 variable "vpn_connections" {
-  description = "List of VPN connections to create. Each connection requires peer details."
+  description = <<-EOT
+    List of VPN connections to create. Each connection requires peer details.
+    
+    Example:
+    vpn_connections = [
+      {
+        name          = "office-to-ibm-cloud"
+        peer_address  = "203.0.113.10"
+        preshared_key = "your-secure-preshared-key-here"
+        local_cidrs   = ["10.240.0.0/24", "10.240.1.0/24"]
+        peer_cidrs    = ["192.168.1.0/24", "192.168.2.0/24"]
+      },
+      {
+        name          = "datacenter-to-ibm-cloud"
+        peer_address  = "198.51.100.20"
+        preshared_key = "another-secure-preshared-key"
+        local_cidrs   = ["10.240.0.0/24"]
+        peer_cidrs    = ["172.16.0.0/16"]
+      }
+    ]
+  EOT
   type = list(object({
     name          = string
     peer_address  = string
@@ -201,7 +221,7 @@ variable "cos_bucket_name" {
 variable "cos_storage_class" {
   description = "Storage class for COS bucket: standard, vault, cold, or smart"
   type        = string
-  default     = "standard"
+  default     = "smart"
 
   validation {
     condition     = contains(["standard", "vault", "cold", "smart"], var.cos_storage_class)
@@ -212,20 +232,20 @@ variable "cos_storage_class" {
 variable "cos_encryption_enabled" {
   description = "Enable encryption for COS bucket using Key Protect or HPCS"
   type        = bool
-  default     = true
+  default     = false
 }
 
 
 variable "cos_archive_days" {
   description = "Number of days before archiving objects to Glacier (0 to disable)"
   type        = number
-  default     = 90
+  default     = 120
 }
 
 variable "cos_expire_days" {
   description = "Number of days before expiring (deleting) objects (0 to disable)"
   type        = number
-  default     = 365
+  default     = 0
 }
 
 variable "cos_abort_multipart_days" {
@@ -275,21 +295,34 @@ variable "kms_key_crn" {
 ##############################################################################
 
 variable "powervs_zone" {
-  description = "PowerVS zone (e.g., dal10, dal12, us-south, us-east, etc.)"
+  description = <<-EOT
+    PowerVS Zone:
+      Dallas (dal10, dal12, dal13);
+      Washington DC (wdc04, wdc06, wdc07)
+      Toronto (tor01)
+      Montreal (mon04)
+      Sao Paulo (sao01, sao04))
+      Frankfurt (eu-de-1, eu-de-2)
+      London (lon04, lon06)
+      Madrid (mad02, mad04)
+      Sydney (syd04, syd05) 
+      Osaka (osa21) 
+      Tokyo (tok04)
+  EOT
   type        = string
-  default     = "dal10"
+  default     = "mad02"
 }
 
 variable "powervs_workspace_name" {
   description = "Name suffix for PowerVS workspace (will be prefixed with var.prefix)"
   type        = string
-  default     = "powervs-workspace"
+  default     = "pvs-ws"
 }
 
 variable "powervs_subnet_name" {
   description = "Name for PowerVS private subnet"
   type        = string
-  default     = "powervs-subnet"
+  default     = "pvs-sn"
 }
 
 variable "powervs_subnet_cidr" {
@@ -359,9 +392,9 @@ variable "powervs_instance_proc_type" {
 }
 
 variable "powervs_instance_sys_type" {
-  description = "System type for PowerVS instance (e.g., 's922', 'e980')"
+  description = "System type for PowerVS instance (e.g., 's922', 's1022', 's1122',  'e980', 'e1080')"
   type        = string
-  default     = "s922"
+  default     = "s1022"
 }
 
 variable "powervs_storage_tier" {
