@@ -133,7 +133,7 @@ powervs_subnet_cidr = "192.168.100.0/24"
 # DNS servers for PowerVS subnet
 powervs_dns_servers = ["8.8.8.8", "8.8.4.4"]
 
-# SSH key name for PowerVS instances
+# SSH key name for PowerVS workspace
 powervs_ssh_key_name = "<REQUIRED>"  # e.g., "myproject-ssh-key"
 
 # SSH public key content
@@ -142,36 +142,15 @@ powervs_ssh_key_name = "<REQUIRED>"  # e.g., "myproject-ssh-key"
 powervs_ssh_public_key = "<REQUIRED>"  # e.g., "ssh-rsa AAAAB3NzaC1yc2EA..."
 
 ##############################################################################
-# PowerVS Instance Configuration
+# PowerVS Instance Configuration - NOT DEPLOYED
 ##############################################################################
-
-# PowerVS instance name suffix
-powervs_instance_name = "lpar"
-
-# PowerVS instance image
-# List available images: ibmcloud pi images --json
-# Examples: "IBMi-75-03", "SLES15-SP4", "RHEL8-SP6"
-powervs_instance_image = "<REQUIRED>"  # e.g., "SLES15-SP4"
-
-# Number of processors (can be fractional)
-# Examples: "0.25", "0.5", "1", "2"
-powervs_instance_processors = "0.5"
-
-# Memory in GB
-powervs_instance_memory = "4"
-
-# Processor type: "shared" (recommended for dev), "capped", or "dedicated"
-powervs_instance_proc_type = "shared"
-
-# System type (depends on zone availability)
-# Examples: "s922", "e980", "s1022"
-powervs_instance_sys_type = "s922"
-
-# Storage tier: "tier3" (standard) or "tier1" (high performance)
-powervs_storage_tier = "tier3"
-
-# Storage size in GB
-powervs_storage_size = "100"
+# This landing zone creates the infrastructure foundation only.
+# After deployment, users can create LPAR instances using:
+#   - IBM Cloud Console
+#   - IBM Cloud CLI: ibmcloud pi instance-create
+#   - Terraform (separate configuration)
+#   - API calls
+##############################################################################
 
 ##############################################################################
 # Transit Gateway Configuration
@@ -206,9 +185,6 @@ vpe_gateway_name = "vpe-cos"
 # enable_vpn            = false
 # powervs_zone          = "dal10"
 # powervs_subnet_cidr   = "192.168.100.0/24"
-# powervs_instance_processors = "0.5"
-# powervs_instance_memory     = "4"
-# powervs_storage_tier  = "tier3"
 
 # EXAMPLE 2: Production Environment with VPN
 # -------------------------------------------
@@ -228,9 +204,6 @@ vpe_gateway_name = "vpe-cos"
 # ]
 # powervs_zone          = "dal10"
 # powervs_subnet_cidr   = "192.168.200.0/24"
-# powervs_instance_processors = "2"
-# powervs_instance_memory     = "16"
-# powervs_storage_tier  = "tier1"
 # cos_encryption_enabled = true
 # kms_key_crn           = "crn:v1:bluemix:public:kms:..."
 

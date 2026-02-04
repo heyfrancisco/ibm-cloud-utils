@@ -1,6 +1,8 @@
-# IBM Cloud - PowerVS POC Template
+# IBM Cloud - PowerVS Landing Zone Template
 
-A comprehensive tf-based landing zone for IBM Cloud that creates a hybrid cloud infrastructure connecting VPC with PowerVS workloads through Transit Gateway, with secure VPN access and private Cloud Object Storage connectivity.
+A comprehensive Terraform-based landing zone for IBM Cloud that creates a hybrid cloud infrastructure foundation connecting VPC with PowerVS workspace through Transit Gateway, with secure VPN access and private Cloud Object Storage connectivity.
+
+**This landing zone provides the infrastructure foundation only.** Users can deploy their own LPAR instances after the workspace is ready.
 
 ## 🏗️ Architecture Overview
 
@@ -9,8 +11,7 @@ This landing zone deploys the following components:
 - **VPC Infrastructure**: Foundation network with subnets, security groups, and network ACLs
 - **Site-to-Site VPN** (Optional): Secure connectivity for external access
 - **Cloud Object Storage**: Object storage with encryption and private connectivity
-- **PowerVS Workspace**: IBM Power Systems Virtual Server workspace with private networking
-- **PowerVS Instance**: LPAR instances running on PowerVS
+- **PowerVS Workspace**: IBM Power Systems Virtual Server workspace with private networking (ready for LPAR deployment)
 - **Transit Gateway**: Bridges VPC and PowerVS networks with local routing
 - **VPE Gateway**: Private connectivity between VPC and cloud services (COS)
 
@@ -24,7 +25,7 @@ This landing zone deploys the following components:
 │  │  │   Subnet     │      │  Security Group │                 │ │
 │  │  │  (1 Zone)    │      │  - SSH (22)     │                 │ │
 │  │  │              │      │  - HTTPS (443)  │                 │ │
-│  │  └──────────────┘      └─────────────────┘                 │ │       
+│  │  └──────────────┘      └─────────────────┘                 │ │
 │  │         │              ┌─────────────────┐                 │ │     ┌─────────┐
 │  │         └──────────────│  VPN Gateway    │──────────────────────── │ ON-PREM │
 │  │                        │  (Site-to-Site) │                 │ │     └─────────┘
@@ -35,9 +36,11 @@ This landing zone deploys the following components:
 │                    └───────────────┬───────────────┘            │
 │  ┌─────────────────────────────────┼──────────────────────────┐ │
 │  │              PowerVS Workspace  │                          │ │
-│  │  ┌──────────────────┐    ┌──────┴─────────┐                │ │
-│  │  │  Private Subnet  │    │  PowerVS LPAR  │                │ │
-│  │  └──────────────────┘    └────────────────┘                │ │
+│  │  ┌──────────────────┐                                      │ │
+│  │  │  Private Subnet  │                                      │ │
+│  │  │                  │                                      │ │
+│  │  │  + SSH Key       │                                      │ │
+│  │  └──────────────────┘                                      │ │
 │  └────────────────────────────────────────────────────────────┘ │
 │  ┌────────────────────────────────────────────────────────────┐ │
 │  │              Cloud Object Storage (COS)                    │ │
@@ -47,6 +50,9 @@ This landing zone deploys the following components:
 │  │              └───────────────────┘                         │ │
 │  └────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
+
+Note: This landing zone creates the infrastructure foundation.
+      Users can deploy LPAR instances using the workspace after deployment.
 ```
 
 ## 📋 Prerequisites
@@ -97,9 +103,8 @@ vi terraform.tfvars
 **Required Variables:**
 - `prefix`: Unique identifier for resources (max 20 chars)
 - `resource_group_name`: Target resource group name
-- `powervs_ssh_key_name`: SSH key name
-- `powervs_ssh_public_key`: SSH public key content
-- `powervs_instance_image`: PowerVS instance image
+- `powervs_ssh_key_name`: SSH key name for PowerVS workspace
+- `powervs_ssh_public_key`: SSH public key content for PowerVS workspace
 
 ### 3. Set IBM Cloud API Key
 
@@ -145,22 +150,17 @@ terraform output
 ├── versions.tf                      # Terraform and provider versions
 ├── variables.tf                     # Variable definitions
 ├── terraform.tfvars.template        # Variable values template
-├── main.tf                          # Root module (to be created)
-├── outputs.tf                       # Root outputs (to be created)
+├── main.tf                          # Root module orchestration
+├── outputs.tf                       # Root outputs
 │
 ├── modules/                         # Terraform modules
 │   ├── 01-vpc/                        # VPC Infrastructure
 │   ├── 02-vpn/                        # Site-to-Site VPN (Optional)
 │   ├── 03-cos/                        # Cloud Object Storage
-│   ├── 04-powervs-workspace/          # PowerVS Workspace
-│   ├── 05-powervs-instance/           # PowerVS Instance
+│   ├── 04-powervs-workspace/          # PowerVS Workspace (ready for LPAR)
+│   ├── 05-powervs-instance/           # PowerVS Instance (not used)
 │   ├── 06-transit-gateway/            # Transit Gateway
 │   └── 07-vpe-gateway/                # VPE Gateway
-│
-├── scripts/                         # Utility scripts
-│   ├── verify-connectivity.sh         # Network connectivity tests
-│   ├── verify-security.sh             # Security validation
-│   └── verify-resources.sh            # Resource verification
 │
 └── docs/                            # Additional documentation
     ├── TROUBLESHOOTING.md             # Common issues and solutions
@@ -168,6 +168,8 @@ terraform output
     └── IMPLEMENTATION_PLAN.md         # Detailed implementation guide
 
 ```
+
+**Note:** Module `05-powervs-instance` is included but not deployed by this landing zone. Users can reference it or create their own LPAR deployment configuration.
 
 ## 🔧 Configuration
 
@@ -178,10 +180,15 @@ Modules are deployed in the following order due to dependencies:
 1. **VPC Infrastructure** → Provides network foundation
 2. **Site-to-Site VPN** (Optional) → Requires VPC
 3. **Cloud Object Storage** → Independent service
-4. **PowerVS Workspace** → Independent service
-5. **PowerVS Instance** → Requires workspace
-6. **Transit Gateway** → Requires VPC and PowerVS workspace
-7. **VPE Gateway** → Requires VPC and COS
+4. **Transit Gateway** → Requires VPC
+5. **VPE Gateway** → Requires VPC and COS
+6. **PowerVS Workspace** → Requires Transit Gateway (if enabled)
+
+**Note:** After deployment, users can create LPAR instances in the PowerVS workspace using:
+- IBM Cloud Console
+- IBM Cloud CLI: `ibmcloud pi instance-create`
+- Terraform (separate configuration)
+- REST API
 
 ### Resource Naming
 
@@ -193,8 +200,9 @@ ${var.prefix}-${resource_type}-${identifier}
 Examples:
 - VPC: `myproject-vpc`
 - Subnet: `myproject-subnet-zone-1`
-- PowerVS Instance: `myproject-powervs-lpar`
+- PowerVS Workspace: `myproject-pvs-ws`
 - Transit Gateway: `myproject-tgw`
+- COS Instance: `myproject-cos`
 
 ## 📖 Detailed Documentation
 

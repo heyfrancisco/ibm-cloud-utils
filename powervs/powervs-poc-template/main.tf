@@ -4,14 +4,16 @@
 # This is the main orchestration file that calls all infrastructure modules
 # in the correct order with proper dependencies.
 #
+# This landing zone creates the infrastructure foundation only.
+# Users can deploy their own LPAR instances after the workspace is ready.
+#
 # Deployment Order:
 # 1. VPC Infrastructure (networking foundation)
 # 2. Cloud Object Storage (storage layer)
 # 3. Transit Gateway (network connectivity)
 # 4. VPE Gateway (private endpoints)
-# 5. PowerVS Workspace (compute foundation)
-# 6. PowerVS Instance (workload)
-# 7. VPN (optional - site-to-site connectivity)
+# 5. PowerVS Workspace (compute foundation - ready for LPAR deployment)
+# 6. VPN (optional - site-to-site connectivity)
 ##############################################################################
 
 ##############################################################################
@@ -201,40 +203,7 @@ module "powervs_workspace" {
 }
 
 ##############################################################################
-# Module 07: PowerVS Instance
-# Creates PowerVS LPAR instance with storage
+# PowerVS Instance Module Removed
+# This landing zone provides the infrastructure foundation only.
+# Users can deploy their own LPAR instances using the workspace created above.
 ##############################################################################
-
-module "powervs_instance" {
-  count  = var.enable_powervs && var.enable_powervs_instance ? 1 : 0
-  source = "./modules/05-powervs-instance"
-
-  # Core Configuration
-  prefix = var.prefix
-  tags   = var.tags
-
-  # Workspace Configuration
-  pi_workspace_guid = module.powervs_workspace[0].pi_workspace_guid
-  pi_zone           = var.powervs_zone
-  pi_ssh_key_name   = module.powervs_workspace[0].pi_ssh_public_key.name
-
-  # Network Configuration
-  pi_subnet_name = module.powervs_workspace[0].pi_private_subnet_1.name
-  pi_subnet_id   = module.powervs_workspace[0].pi_private_subnet_1.id
-
-  # Instance Configuration
-  powervs_instance_name       = var.powervs_instance_name
-  powervs_instance_image      = var.powervs_instance_image
-  powervs_instance_processors = var.powervs_instance_processors
-  powervs_instance_memory     = var.powervs_instance_memory
-  powervs_instance_proc_type  = var.powervs_instance_proc_type
-
-  # Storage Configuration
-  powervs_storage_tier = var.powervs_storage_tier
-  powervs_storage_size = var.powervs_storage_size
-
-  # User Data
-  pi_user_data = var.powervs_instance_user_data
-
-  depends_on = [module.powervs_workspace]
-}

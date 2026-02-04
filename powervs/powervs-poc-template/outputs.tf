@@ -175,28 +175,10 @@ output "powervs_subnet_name" {
 }
 
 ##############################################################################
-# PowerVS Instance Outputs (Optional)
+# PowerVS Instance Outputs - REMOVED
+# This landing zone provides infrastructure only.
+# Users can deploy LPAR instances separately and query their details.
 ##############################################################################
-
-output "powervs_instance_id" {
-  description = "ID of PowerVS instance"
-  value       = var.enable_powervs && var.enable_powervs_instance ? module.powervs_instance[0].pi_instance_id : null
-}
-
-output "powervs_instance_name" {
-  description = "Name of PowerVS instance"
-  value       = var.enable_powervs && var.enable_powervs_instance ? module.powervs_instance[0].pi_instance_name : null
-}
-
-output "powervs_instance_private_ips" {
-  description = "Private IP addresses of PowerVS instance"
-  value       = var.enable_powervs && var.enable_powervs_instance ? module.powervs_instance[0].pi_instance_private_ips : []
-}
-
-output "powervs_instance_primary_ip" {
-  description = "Primary IP address of PowerVS instance"
-  value       = var.enable_powervs && var.enable_powervs_instance ? module.powervs_instance[0].pi_instance_primary_ip : null
-}
 
 ##############################################################################
 # Summary Output
@@ -205,14 +187,14 @@ output "powervs_instance_primary_ip" {
 output "deployment_summary" {
   description = "Summary of deployed resources"
   value = {
-    region                = var.region
-    prefix                = var.prefix
-    vpc_enabled           = true
-    vpn_enabled           = var.enable_vpn_gateway
-    cos_enabled           = true
+    region                  = var.region
+    prefix                  = var.prefix
+    vpc_enabled             = true
+    vpn_enabled             = var.enable_vpn_gateway
+    cos_enabled             = true
     transit_gateway_enabled = var.enable_transit_gateway
-    vpe_gateway_enabled   = var.enable_vpe_gateway
-    powervs_enabled       = var.enable_powervs
-    powervs_instance_enabled = var.enable_powervs && var.enable_powervs_instance
+    vpe_gateway_enabled     = var.enable_vpe_gateway
+    powervs_workspace_enabled = var.enable_powervs
+    note                    = "Landing zone ready. Users can deploy LPAR instances using the PowerVS workspace."
   }
 }

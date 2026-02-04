@@ -354,59 +354,10 @@ variable "powervs_ssh_public_key" {
 }
 
 ##############################################################################
-# PowerVS Instance Variables
+# PowerVS Instance Variables - REMOVED
+# This landing zone provides infrastructure only.
+# Users can deploy LPAR instances separately using the workspace created.
 ##############################################################################
-
-variable "powervs_instance_name" {
-  description = "Name suffix for PowerVS LPAR instance (will be prefixed with var.prefix)"
-  type        = string
-  default     = "lpar"
-}
-
-variable "powervs_instance_image" {
-  description = "Image ID or name for PowerVS instance (e.g., 'IBMi-75-03', 'SLES15-SP4')"
-  type        = string
-}
-
-variable "powervs_instance_processors" {
-  description = "Number of processors for PowerVS instance (can be fractional, e.g., '0.5')"
-  type        = string
-  default     = "0.5"
-}
-
-variable "powervs_instance_memory" {
-  description = "Memory in GB for PowerVS instance"
-  type        = string
-  default     = "4"
-}
-
-variable "powervs_instance_proc_type" {
-  description = "Processor type: 'shared', 'capped', or 'dedicated'"
-  type        = string
-  default     = "shared"
-
-  validation {
-    condition     = contains(["shared", "capped", "dedicated"], var.powervs_instance_proc_type)
-    error_message = "Processor type must be 'shared', 'capped', or 'dedicated'."
-  }
-}
-
-variable "powervs_instance_sys_type" {
-  description = "System type for PowerVS instance (e.g., 's922', 's1022', 's1122',  'e980', 'e1080')"
-  type        = string
-  default     = "s1022"
-}
-
-variable "powervs_storage_tier" {
-  description = "Storage tier for PowerVS: 'tier1' (high performance) or 'tier3' (standard)"
-  type        = string
-  default     = "tier3"
-
-  validation {
-    condition     = contains(["tier1", "tier3"], var.powervs_storage_tier)
-    error_message = "Storage tier must be 'tier1' or 'tier3'."
-  }
-}
 
 variable "enable_transit_gateway" {
   description = "Enable Transit Gateway deployment for network connectivity"
@@ -418,13 +369,6 @@ variable "enable_prefix_filters" {
   description = "Enable prefix filtering for Transit Gateway route control"
   type        = bool
   default     = false
-}
-
-
-variable "powervs_storage_size" {
-  description = "Storage size in GB for PowerVS instance"
-  type        = string
-  default     = "100"
 }
 
 ##############################################################################
@@ -445,13 +389,7 @@ variable "vpe_reserve_ips" {
 }
 
 variable "enable_powervs" {
-  description = "Enable PowerVS workspace and instance deployment"
-  type        = bool
-  default     = true
-}
-
-variable "enable_powervs_instance" {
-  description = "Enable PowerVS instance creation (requires enable_powervs = true)"
+  description = "Enable PowerVS workspace deployment"
   type        = bool
   default     = true
 }
@@ -463,12 +401,6 @@ variable "powervs_custom_image_1" {
     source_url = string
   })
   default = null
-}
-
-variable "powervs_instance_user_data" {
-  description = "Cloud-init user data for PowerVS instance initialization"
-  type        = string
-  default     = null
 }
 
 variable "transit_gateway_name" {
@@ -524,7 +456,6 @@ variable "ibmcloud_api_key" {
 #    - resource_group_name: Target resource group name
 #    - powervs_ssh_key_name: SSH key name for PowerVS
 #    - powervs_ssh_public_key: SSH public key content
-#    - powervs_instance_image: PowerVS instance image
 #
 # 2. Optional Variables:
 #    - All other variables have sensible defaults
