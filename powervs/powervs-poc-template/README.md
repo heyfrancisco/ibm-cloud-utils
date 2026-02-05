@@ -10,10 +10,9 @@ This landing zone deploys the following components:
 
 - **VPC Infrastructure**: Foundation network with subnets, security groups, and network ACLs
 - **Site-to-Site VPN** (Optional): Secure connectivity for external access
-- **Cloud Object Storage**: Object storage with encryption and private connectivity
-- **PowerVS Workspace**: IBM Power Systems Virtual Server workspace with private networking (ready for LPAR deployment)
-- **Transit Gateway**: Bridges VPC and PowerVS networks with local routing
-- **VPE Gateway**: Private connectivity between VPC and cloud services (COS)
+- **Cloud Object Storage**: Object storage with encryption
+- **Transit Gateway** (Optional): Bridges VPC and PowerVS networks with local routing
+- **PowerVS Workspace** (Optional): IBM Power Systems Virtual Server workspace with private networking (ready for LPAR deployment)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -28,14 +27,14 @@ This landing zone deploys the following components:
 │  │  └──────────────┘      └─────────────────┘                 │ │
 │  │         │              ┌─────────────────┐                 │ │     ┌─────────┐
 │  │         └──────────────│  VPN Gateway    │──────────────────────── │ ON-PREM │
-│  │                        │  (Site-to-Site) │                 │ │     └─────────┘
+│  │                        │  (Optional)     │                 │ │     └─────────┘
 │  │                        └─────────────────┘                 │ │
 │  └─────────────────────────────────┼──────────────────────────┘ │
 │                    ┌───────────────┴───────────────┐            │
-│                    │    Transit Gateway (Local)    │            │
+│                    │  Transit Gateway (Optional)   │            │
 │                    └───────────────┬───────────────┘            │
 │  ┌─────────────────────────────────┼──────────────────────────┐ │
-│  │              PowerVS Workspace  │                          │ │
+│  │        PowerVS Workspace (Optional)                        │ │
 │  │  ┌──────────────────┐                                      │ │
 │  │  │  Private Subnet  │                                      │ │
 │  │  │                  │                                      │ │
@@ -44,14 +43,11 @@ This landing zone deploys the following components:
 │  └────────────────────────────────────────────────────────────┘ │
 │  ┌────────────────────────────────────────────────────────────┐ │
 │  │              Cloud Object Storage (COS)                    │ │
-│  │              ┌─────────┴─────────┐                         │ │
-│  │              │  VPE Gateway      │                         │ │
-│  │              │  (Private Access) │                         │ │
-│  │              └───────────────────┘                         │ │
 │  └────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
 
 Note: This landing zone creates the infrastructure foundation.
+      Transit Gateway and PowerVS Workspace are optional components.
       Users can deploy LPAR instances using the workspace after deployment.
 ```
 
@@ -171,9 +167,8 @@ Modules are deployed in the following order due to dependencies:
 1. **VPC Infrastructure** → Provides network foundation
 2. **Site-to-Site VPN** (Optional) → Requires VPC
 3. **Cloud Object Storage** → Independent service
-4. **Transit Gateway** → Requires VPC
-5. **VPE Gateway** → Requires VPC and COS
-6. **PowerVS Workspace** → Requires Transit Gateway (if enabled)
+4. **Transit Gateway** (Optional) → Requires VPC
+5. **PowerVS Workspace** (Optional) → Requires Transit Gateway (if enabled)
 
 **Note:** After deployment, users can create LPAR instances in the PowerVS workspace using:
 - IBM Cloud Console
