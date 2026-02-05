@@ -11,9 +11,8 @@
 # 1. VPC Infrastructure (networking foundation)
 # 2. Cloud Object Storage (storage layer)
 # 3. Transit Gateway (network connectivity)
-# 4. VPE Gateway (private endpoints)
-# 5. PowerVS Workspace (compute foundation - ready for LPAR deployment)
-# 6. VPN (optional - site-to-site connectivity)
+# 4. PowerVS Workspace (compute foundation - ready for LPAR deployment)
+# 5. VPN (optional - site-to-site connectivity)
 ##############################################################################
 
 ##############################################################################
@@ -142,38 +141,7 @@ module "transit_gateway" {
 }
 
 ##############################################################################
-# Module 05: VPE Gateway
-# Creates VPE gateway for private COS access
-##############################################################################
-
-module "vpe_gateway" {
-  count  = var.enable_vpe_gateway ? 1 : 0
-  source = "./modules/07-vpe-gateway"
-
-  # Core Configuration
-  resource_group_id = data.ibm_resource_group.resource_group.id
-  prefix            = var.prefix
-  tags              = var.tags
-
-  # VPC Configuration
-  vpc_id   = module.vpc.vpc_id
-  vpc_name = module.vpc.vpc_name
-
-  # VPE Configuration
-  vpe_gateway_name   = var.vpe_gateway_name
-  cos_instance_crn   = module.cos.cos_instance_crn
-  subnet_zone_list   = module.vpc.subnet_zone_list
-  # Note: security_group_details is empty when clean_default_sg_acl is true
-  # VPE will use the default VPC security group
-  security_group_ids = []
-  # Disable reserved IPs to avoid for_each issues with unknown values
-  reserve_ips        = false
-
-  depends_on = [module.vpc, module.cos]
-}
-
-##############################################################################
-# Module 06: PowerVS Workspace
+# Module 05: PowerVS Workspace
 # Creates PowerVS workspace with private subnet and SSH key
 ##############################################################################
 

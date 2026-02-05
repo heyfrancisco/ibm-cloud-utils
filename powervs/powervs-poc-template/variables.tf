@@ -376,18 +376,6 @@ variable "enable_prefix_filters" {
 ##############################################################################
 
 
-variable "enable_vpe_gateway" {
-  description = "Enable VPE Gateway for private COS access"
-  type        = bool
-  default     = true
-}
-
-variable "vpe_reserve_ips" {
-  description = "Reserve specific IPs for VPE gateway"
-  type        = bool
-  default     = false
-}
-
 variable "enable_powervs" {
   description = "Enable PowerVS workspace deployment"
   type        = bool
@@ -424,16 +412,6 @@ variable "enable_global_routing" {
   description = "Enable global routing for Transit Gateway (required for cross-region connectivity)"
   type        = bool
   default     = false
-}
-
-##############################################################################
-# VPE Gateway Variables
-##############################################################################
-
-variable "vpe_gateway_name" {
-  description = "Name suffix for VPE Gateway (will be prefixed with var.prefix)"
-  type        = string
-  default     = "vpe-cos"
 }
 
 ##############################################################################
