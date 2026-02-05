@@ -156,25 +156,19 @@ output "powervs_subnet_name" {
 }
 
 ##############################################################################
-# PowerVS Instance Outputs - REMOVED
-# This landing zone provides infrastructure only.
-# Users can deploy LPAR instances separately and query their details.
-##############################################################################
-
-##############################################################################
 # Summary Output
 ##############################################################################
 
 output "deployment_summary" {
   description = "Summary of deployed resources"
   value = {
-    region                    = var.region
-    prefix                    = var.prefix
-    vpc_enabled               = true
-    vpn_enabled               = var.enable_vpn_gateway
-    cos_enabled               = true
-    transit_gateway_enabled   = var.enable_transit_gateway
-    powervs_workspace_enabled = var.enable_powervs
-    note                      = "Landing zone ready. Users can deploy LPAR instances using the PowerVS workspace."
+    region                        = var.region
+    prefix                        = var.prefix
+    vpc_enabled                   = true
+    vpn_enabled                   = var.enable_vpn_gateway
+    cos_enabled                   = true
+    transit_gateway_enabled       = var.enable_transit_gateway
+    powervs_workspace_enabled     = var.enable_powervs
+    note                          = "Landing zone ready. Deploy LPAR instances using the PowerVS workspace. Local module wrappers removed - using registry modules directly."
   }
 }
