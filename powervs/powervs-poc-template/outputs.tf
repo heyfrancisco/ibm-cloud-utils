@@ -34,9 +34,9 @@ output "subnet_zone_list" {
   value       = module.vpc.subnet_zone_list
 }
 
-output "security_group_ids" {
-  description = "Map of security group names to IDs"
-  value       = module.vpc.security_group_ids
+output "security_group_details" {
+  description = "Details of security groups"
+  value       = module.vpc.security_group_details
 }
 
 output "vpn_gateway_id" {
@@ -46,7 +46,7 @@ output "vpn_gateway_id" {
 
 output "vpn_gateway_public_ips" {
   description = "Public IPs of VPN gateway (if enabled)"
-  value       = var.enable_vpn_gateway ? module.vpc.vpn_gateway_public_ips : []
+  value       = var.enable_vpn_gateway ? [for member in module.vpc.vpn_gateways_data[0].members : member.public_ip_address] : []
 }
 
 ##############################################################################
@@ -122,25 +122,6 @@ output "transit_gateway_name" {
 }
 
 ##############################################################################
-# VPE Gateway Outputs (Optional)
-##############################################################################
-
-output "vpe_gateway_id" {
-  description = "ID of VPE gateway"
-  value       = var.enable_vpe_gateway ? module.vpe_gateway[0].vpe_gateway_id : null
-}
-
-output "vpe_gateway_ips" {
-  description = "IP addresses of VPE gateway"
-  value       = var.enable_vpe_gateway ? module.vpe_gateway[0].vpe_ips : []
-}
-
-output "vpe_gateway_name" {
-  description = "Name of VPE gateway"
-  value       = var.enable_vpe_gateway ? module.vpe_gateway[0].vpe_gateway_name : null
-}
-
-##############################################################################
 # PowerVS Workspace Outputs (Optional)
 ##############################################################################
 
@@ -175,26 +156,19 @@ output "powervs_subnet_name" {
 }
 
 ##############################################################################
-# PowerVS Instance Outputs - REMOVED
-# This landing zone provides infrastructure only.
-# Users can deploy LPAR instances separately and query their details.
-##############################################################################
-
-##############################################################################
 # Summary Output
 ##############################################################################
 
 output "deployment_summary" {
   description = "Summary of deployed resources"
   value = {
-    region                  = var.region
-    prefix                  = var.prefix
-    vpc_enabled             = true
-    vpn_enabled             = var.enable_vpn_gateway
-    cos_enabled             = true
-    transit_gateway_enabled = var.enable_transit_gateway
-    vpe_gateway_enabled     = var.enable_vpe_gateway
+    region                    = var.region
+    prefix                    = var.prefix
+    vpc_enabled               = true
+    vpn_enabled               = var.enable_vpn_gateway
+    cos_enabled               = true
+    transit_gateway_enabled   = var.enable_transit_gateway
     powervs_workspace_enabled = var.enable_powervs
-    note                    = "Landing zone ready. Users can deploy LPAR instances using the PowerVS workspace."
+    note                      = "Landing zone ready. Deploy LPAR instances using the PowerVS workspace. Local module wrappers removed - using registry modules directly."
   }
 }
