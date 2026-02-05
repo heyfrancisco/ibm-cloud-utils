@@ -150,26 +150,17 @@ terraform output
 ├── versions.tf                      # Terraform and provider versions
 ├── variables.tf                     # Variable definitions
 ├── terraform.tfvars.template        # Variable values template
-├── main.tf                          # Root module orchestration
+├── main.tf                          # Root module orchestration (uses registry modules)
 ├── outputs.tf                       # Root outputs
 │
-├── modules/                         # Terraform modules
-│   ├── 01-vpc/                        # VPC Infrastructure
-│   ├── 02-vpn/                        # Site-to-Site VPN (Optional)
-│   ├── 03-cos/                        # Cloud Object Storage
-│   ├── 04-powervs-workspace/          # PowerVS Workspace (ready for LPAR)
-│   ├── 05-powervs-instance/           # PowerVS Instance (not used)
-│   ├── 06-transit-gateway/            # Transit Gateway
-│   └── 07-vpe-gateway/                # VPE Gateway
-│
 └── docs/                            # Additional documentation
+    ├── IMPLEMENTATION_PLAN.md         # Detailed implementation guide
     ├── TROUBLESHOOTING.md             # Common issues and solutions
-    ├── MONITORING.md                  # Monitoring and maintenance
-    └── IMPLEMENTATION_PLAN.md         # Detailed implementation guide
+    └── MONITORING.md                  # Monitoring and maintenance
 
 ```
 
-**Note:** Module `05-powervs-instance` is included but not deployed by this landing zone. Users can reference it or create their own LPAR deployment configuration.
+**Note:** This template uses IBM Cloud Terraform modules directly from the registry without local module wrappers. All module configurations are in the root `main.tf` file.
 
 ## 🔧 Configuration
 

@@ -46,146 +46,98 @@ Examples:
 
 ```
 /
-├── IMPLEMENTATION_PLAN.md          # This file
 ├── README.md                        # Project documentation
 ├── provider.tf                      # IBM Cloud provider configuration
 ├── versions.tf                      # Terraform and provider version constraints
 ├── terraform.tfvars.template        # Template for variable values
-├── main.tf                          # Root module orchestration
+├── main.tf                          # Root module orchestration (uses registry modules directly)
 ├── variables.tf                     # Root module variables
 ├── outputs.tf                       # Root module outputs
 │
-├── modules/                         # Terraform modules
-│   ├── 01-vpc/                     # VPC Infrastructure
-│   │   ├── main.tf                 # VPC module configuration
-│   │   ├── variables.tf            # VPC variables
-│   │   ├── outputs.tf              # VPC outputs
-│   │   └── README.md               # VPC module documentation
-│   │
-│   ├── 02-vpn/                     # Site-to-Site VPN (Optional)
-│   │   ├── main.tf                 # VPN module configuration
-│   │   ├── variables.tf            # VPN variables
-│   │   ├── outputs.tf              # VPN outputs
-│   │   └── README.md               # VPN module documentation
-│   │
-│   ├── 03-cos/                     # Cloud Object Storage
-│   │   ├── main.tf                 # COS module configuration
-│   │   ├── variables.tf            # COS variables
-│   │   ├── outputs.tf              # COS outputs
-│   │   └── README.md               # COS module documentation
-│   │
-│   ├── 04-powervs-workspace/       # PowerVS Workspace
-│   │   ├── main.tf                 # Workspace module configuration
-│   │   ├── variables.tf            # Workspace variables
-│   │   ├── outputs.tf              # Workspace outputs
-│   │   └── README.md               # Workspace module documentation
-│   │
-│   ├── 05-powervs-instance/        # PowerVS Instance
-│   │   ├── main.tf                 # Instance module configuration
-│   │   ├── variables.tf            # Instance variables
-│   │   ├── outputs.tf              # Instance outputs
-│   │   └── README.md               # Instance module documentation
-│   │
-│   ├── 06-transit-gateway/         # Transit Gateway
-│   │   ├── main.tf                 # Transit Gateway configuration
-│   │   ├── variables.tf            # Transit Gateway variables
-│   │   ├── outputs.tf              # Transit Gateway outputs
-│   │   └── README.md               # Transit Gateway documentation
-│   │
-│   └── 07-vpe-gateway/             # VPE Gateway
-│       ├── main.tf                 # VPE Gateway configuration
-│       ├── variables.tf            # VPE Gateway variables
-│       ├── outputs.tf              # VPE Gateway outputs
-│       └── README.md               # VPE Gateway documentation
-│
-├── scripts/                         # Utility scripts
-│   ├── verify-connectivity.sh      # Network connectivity verification
-│   ├── verify-security.sh          # Security configuration verification
-│   └── verify-resources.sh         # Resource deployment verification
-│
 └── docs/                            # Additional documentation
+    ├── IMPLEMENTATION_PLAN.md      # This file - Complete implementation guide
     ├── TROUBLESHOOTING.md          # Common issues and solutions
     └── MONITORING.md               # Monitoring and maintenance guide
 ```
+
+**Note:** This template uses IBM Cloud Terraform modules directly from the registry without local module wrappers. All module configurations are in the root `main.tf` file.
 
 ---
 
 ## Module Requirements
 
+This template uses IBM Cloud Terraform modules directly from the Terraform Registry. All modules are configured in the root `main.tf` file.
+
 ### 1. VPC Infrastructure (landing-zone-vpc)
 - **Module Source**: `terraform-ibm-modules/landing-zone-vpc/ibm`
 - **Version**: `8.7.0`
-- **Purpose**: Creates VPC with subnets, security groups, and network ACLs
+- **Purpose**: Creates VPC with subnets, security groups, network ACLs, and optional VPN gateway
 - **Dependencies**: None (foundation layer)
+- **Outputs**: vpc_id, vpc_crn, subnet_ids, subnet_zone_list, security_group_details, vpn_gateways_data
 
 ### 2. Site-to-Site VPN (site-to-site-vpn)
 - **Module Source**: `terraform-ibm-modules/site-to-site-vpn/ibm`
 - **Version**: `3.0.4`
 - **Purpose**: Establishes secure VPN connections to external networks
-- **Dependencies**: VPC (vpc_id, subnet_id)
+- **Dependencies**: VPC (existing_vpn_gateway_id from VPC module)
 - **Optional**: Can be skipped if VPN connectivity is not required
+- **Outputs**: vpn_connection_ids, vpn_connection_statuses
 
 ### 3. Cloud Object Storage (cos)
 - **Module Source**: `terraform-ibm-modules/cos/ibm`
 - **Version**: `10.5.0`
 - **Purpose**: Provisions COS instance and buckets with encryption
 - **Dependencies**: None (independent service)
+- **Outputs**: cos_instance_id, cos_instance_crn, cos_instance_guid, bucket_name, bucket_id, s3_endpoint_private, s3_endpoint_direct
 
-### 4. PowerVS Workspace (powervs-workspace)
-- **Module Source**: `terraform-ibm-modules/powervs-workspace/ibm`
-- **Version**: `4.1.2`
-- **Purpose**: Creates PowerVS workspace with private subnets and SSH keys
-- **Dependencies**: None (independent service)
-
-### 5. PowerVS Instance (powervs-instance)
-- **Module Source**: `terraform-ibm-modules/powervs-instance/ibm`
-- **Version**: `2.8.2`
-- **Purpose**: Deploys LPAR instances in PowerVS workspace
-- **Dependencies**: PowerVS Workspace (workspace_guid, ssh_key, networks)
-
-### 6. Transit Gateway (transit-gateway)
+### 4. Transit Gateway (transit-gateway)
 - **Module Source**: `terraform-ibm-modules/transit-gateway/ibm`
 - **Version**: `2.5.2`
 - **Purpose**: Connects VPC and PowerVS networks
-- **Dependencies**: VPC (vpc_crn), PowerVS Workspace (workspace_id)
+- **Dependencies**: VPC (vpc_id, vpc_crn)
+- **Outputs**: tg_id, tg_crn, vpc_conn_ids, classic_conn_ids, filter_ids
+- **Note**: Transit Gateway name is constructed from variables, not exposed as module output
 
-### 7. VPE Gateway (vpe-gateway)
-- **Module Source**: `terraform-ibm-modules/vpe-gateway/ibm`
-- **Version**: `4.7.12`
-- **Purpose**: Provides private connectivity to cloud services
-- **Dependencies**: VPC (vpc_id, subnet_zone_list), COS (instance_crn)
+### 5. PowerVS Workspace (powervs-workspace)
+- **Module Source**: `terraform-ibm-modules/powervs-workspace/ibm`
+- **Version**: `4.1.2`
+- **Purpose**: Creates PowerVS workspace with private subnets and SSH keys (ready for LPAR deployment)
+- **Dependencies**: Transit Gateway (tg_id for connection)
+- **Outputs**: pi_workspace_guid, pi_workspace_id, pi_workspace_name, pi_zone, pi_ssh_public_key, pi_private_subnet_1
+
+**Note:** PowerVS Instance module is NOT deployed by this landing zone. Users deploy LPAR instances separately after the workspace is ready.
 
 ---
 
 ## Implementation Sequence
 
-The modules must be deployed in the following order due to dependencies:
+The modules are deployed in the following order due to dependencies:
 
 ```
 Step 1: VPC Infrastructure (landing-zone-vpc)
-   ↓ outputs: vpc_id, vpc_crn, subnet_ids, subnet_zone_list, security_group_ids
+   ↓ outputs: vpc_id, vpc_crn, subnet_ids, subnet_zone_list, vpn_gateways_data
    
 Step 2: Site-to-Site VPN (site-to-site-vpn) [OPTIONAL]
-   ↓ requires: vpc_id, subnet_id from Step 1
-   ↓ outputs: vpn_gateway_id, vpn_connection_ids
+   ↓ requires: existing_vpn_gateway_id from Step 1
+   ↓ outputs: vpn_connection_ids, vpn_connection_statuses
    
 Step 3: Cloud Object Storage (cos)
-   ↓ outputs: cos_instance_id, cos_instance_crn, bucket_id
+   ↓ outputs: cos_instance_id, cos_instance_crn, cos_instance_guid, bucket_name
    
-Step 4: PowerVS Workspace (powervs-workspace)
-   ↓ outputs: pi_workspace_guid, pi_workspace_id, pi_ssh_public_key_name, pi_private_subnet_1
-   
-Step 5: PowerVS Instance (powervs-instance)
-   ↓ requires: pi_workspace_guid, pi_ssh_public_key_name, pi_networks from Step 4
-   ↓ outputs: pi_instance_id, pi_instance_private_ips
-   
-Step 6: Transit Gateway (transit-gateway)
-   ↓ requires: vpc_crn from Step 1, pi_workspace_id from Step 4
+Step 4: Transit Gateway (transit-gateway) [OPTIONAL]
+   ↓ requires: vpc_id, vpc_crn from Step 1
    ↓ outputs: tg_id, tg_crn
    
-Step 7: VPE Gateway (vpe-gateway)
-   ↓ requires: vpc_id, subnet_zone_list from Step 1, cos_instance_crn from Step 3
-   ↓ outputs: vpe_ips, crn
+Step 5: PowerVS Workspace (powervs-workspace) [OPTIONAL]
+   ↓ requires: tg_id from Step 4 (if Transit Gateway enabled)
+   ↓ outputs: pi_workspace_guid, pi_workspace_id, pi_workspace_name, pi_private_subnet_1
+   
+Note: PowerVS Instance deployment is NOT included in this landing zone.
+      Users can deploy LPAR instances after the workspace is ready using:
+      - IBM Cloud Console
+      - IBM Cloud CLI
+      - Terraform (separate configuration)
+      - REST API
 ```
 
 ---

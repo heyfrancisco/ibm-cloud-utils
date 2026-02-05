@@ -2,6 +2,8 @@
 
 This guide provides best practices for monitoring and maintaining the IBM Cloud Landing Zone infrastructure.
 
+**Note:** This template uses IBM Cloud Terraform modules directly from the registry. All configurations are in the root `main.tf` file.
+
 ## Table of Contents
 
 1. [Monitoring Overview](#monitoring-overview)
@@ -56,10 +58,11 @@ This guide provides best practices for monitoring and maintaining the IBM Cloud 
 ### Infrastructure Health Checks
 
 ```bash
-# Run automated verification scripts
-./scripts/verify-resources.sh
-./scripts/verify-connectivity.sh
-./scripts/verify-security.sh
+# Check Terraform state
+terraform show
+
+# Verify all outputs
+terraform output
 ```
 
 ### VPC Monitoring

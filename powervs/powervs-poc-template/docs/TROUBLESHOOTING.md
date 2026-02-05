@@ -2,6 +2,8 @@
 
 This guide provides solutions to common issues encountered during deployment and operation of the IBM Cloud Landing Zone.
 
+**Note:** This template uses IBM Cloud Terraform modules directly from the registry. All configurations are in the root `main.tf` file.
+
 ## Table of Contents
 
 1. [General Issues](#general-issues)
@@ -10,8 +12,7 @@ This guide provides solutions to common issues encountered during deployment and
 4. [PowerVS Issues](#powervs-issues)
 5. [Transit Gateway Issues](#transit-gateway-issues)
 6. [COS Issues](#cos-issues)
-7. [VPE Gateway Issues](#vpe-gateway-issues)
-8. [Terraform Issues](#terraform-issues)
+7. [Terraform Issues](#terraform-issues)
 
 ---
 
@@ -442,69 +443,6 @@ This guide provides solutions to common issues encountered during deployment and
 3. Check KMS key is active and not deleted
 
 4. Verify region compatibility between COS and KMS
-
----
-
-## VPE Gateway Issues
-
-### Gateway Creation Failures
-
-**Symptoms:**
-- VPE gateway fails to create
-- Subnet errors
-
-**Solutions:**
-1. Verify VPC and subnets exist
-
-2. Check subnet has available IP addresses
-
-3. Ensure service endpoint is supported in region
-
-4. Review security group configuration
-
-### Service Binding Failures
-
-**Symptoms:**
-- Cannot bind to COS service
-- CRN errors
-
-**Solutions:**
-1. Verify COS instance CRN is correct:
-   ```bash
-   terraform output cos_instance_crn
-   ```
-
-2. Ensure COS instance exists and is active
-
-3. Check VPE gateway is in same region as COS
-
-4. Review IAM permissions for service binding
-
-### Connectivity Issues
-
-**Symptoms:**
-- Cannot access COS through private endpoint
-- DNS resolution fails
-
-**Solutions:**
-1. Verify VPE gateway IPs are assigned:
-   ```bash
-   terraform output vpe_ips
-   ```
-
-2. Check DNS resolution:
-   ```bash
-   nslookup s3.us-south.cloud-object-storage.appdomain.cloud
-   ```
-
-3. Verify security groups allow HTTPS (443) traffic
-
-4. Test connectivity:
-   ```bash
-   curl -I https://s3.us-south.cloud-object-storage.appdomain.cloud
-   ```
-
-5. Ensure VPC DNS resolver is configured correctly
 
 ---
 
