@@ -36,8 +36,10 @@ module "vpe_gateway" {
 
   # Cloud Service Connection
   # Connect to Cloud Object Storage via private endpoint
+  # Provide static gateway name to avoid for_each issues with unknown CRN
   cloud_service_by_crn = [{
-    crn = var.cos_instance_crn
+    crn          = var.cos_instance_crn
+    gateway_name = var.vpe_gateway_name
   }]
 
   # Subnet Configuration
@@ -48,10 +50,6 @@ module "vpe_gateway" {
   # Use existing security group from VPC
   security_group_ids = var.security_group_ids
 
-  # Optional: Reserve specific IPs for VPE
-  reserved_ips = var.reserve_ips ? {
-    (var.subnet_zone_list[0].id) = {
-      name = "${var.prefix}-vpe-ip-1"
-    }
-  } : {}
+  # Disable reserved IPs to avoid for_each issues
+  reserved_ips = {}
 }
