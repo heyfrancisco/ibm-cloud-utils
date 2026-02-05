@@ -38,6 +38,9 @@ output "pi_resource_group_name" {
 }
 
 output "pi_transit_gateway_connection" {
-  description = "Transit Gateway connection details"
-  value       = var.enable_transit_gateway ? module.powervs_workspace.pi_transit_gateway_connection : null
+  description = "Transit Gateway connection configuration (input parameter)"
+  value       = var.enable_transit_gateway ? {
+    enabled            = true
+    transit_gateway_id = var.transit_gateway_id
+  } : null
 }

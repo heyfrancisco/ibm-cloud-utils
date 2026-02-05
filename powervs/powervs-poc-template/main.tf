@@ -163,8 +163,11 @@ module "vpe_gateway" {
   vpe_gateway_name   = var.vpe_gateway_name
   cos_instance_crn   = module.cos.cos_instance_crn
   subnet_zone_list   = module.vpc.subnet_zone_list
-  security_group_ids = [module.vpc.security_group_details[0].id]
-  reserve_ips        = var.vpe_reserve_ips
+  # Note: security_group_details is empty when clean_default_sg_acl is true
+  # VPE will use the default VPC security group
+  security_group_ids = []
+  # Disable reserved IPs to avoid for_each issues with unknown values
+  reserve_ips        = false
 
   depends_on = [module.vpc, module.cos]
 }
