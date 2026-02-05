@@ -419,10 +419,10 @@ variable "enable_global_routing" {
 ##############################################################################
 
 variable "ibmcloud_api_key" {
-   description = "IBM Cloud API key (alternatively use IC_API_KEY environment variable)"
-   type        = string
-   sensitive   = true
-   default     = null
+  description = "IBM Cloud API key (alternatively use IC_API_KEY environment variable)"
+  type        = string
+  sensitive   = true
+  default     = null
 }
 
 ##############################################################################

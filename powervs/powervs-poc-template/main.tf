@@ -30,7 +30,7 @@ module "vpc" {
 
   # Network Configuration
   network_cidrs = [var.vpc_cidr]
-  
+
   subnets = {
     zone-1 = [
       {
@@ -49,7 +49,7 @@ module "vpc" {
       add_ibm_cloud_internal_rules = true
       add_vpc_connectivity_rules   = true
       prepend_ibm_rules            = true
-      
+
       rules = [
         {
           name        = "allow-all-inbound"
@@ -159,7 +159,7 @@ module "vpn" {
   # Optional: Create VPC routes for VPN traffic
   create_routes = var.create_vpn_routes
   vpc_id        = var.create_vpn_routes ? module.vpc.vpc_id : null
-  
+
   routes = var.create_vpn_routes ? flatten([
     for idx, conn in var.vpn_connections : [
       for cidr in conn.peer_cidrs : {
@@ -301,7 +301,7 @@ module "powervs_workspace" {
   pi_transit_gateway_connection = var.enable_transit_gateway ? {
     enable             = true
     transit_gateway_id = module.transit_gateway[0].tg_id
-  } : {
+    } : {
     enable             = false
     transit_gateway_id = null
   }
