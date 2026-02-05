@@ -26,7 +26,7 @@ terraform {
 
 module "vpe_gateway" {
   source  = "terraform-ibm-modules/vpe-gateway/ibm"
-  version = "3.3.3"
+  version = "5.0.3"
 
   # VPE Gateway Configuration
   resource_group_id = var.resource_group_id
