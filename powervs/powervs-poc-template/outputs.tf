@@ -118,7 +118,7 @@ output "transit_gateway_crn" {
 
 output "transit_gateway_name" {
   description = "Name of Transit Gateway"
-  value       = var.enable_transit_gateway ? module.transit_gateway[0].tg_name : null
+  value       = var.enable_transit_gateway ? "${var.prefix}-${var.transit_gateway_name}" : null
 }
 
 ##############################################################################
