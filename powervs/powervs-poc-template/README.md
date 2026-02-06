@@ -8,11 +8,11 @@ A comprehensive Terraform-based landing zone for IBM Cloud that creates a hybrid
 
 This landing zone deploys the following components:
 
-- **VPC Infrastructure**: Foundation network with subnets, security groups, and network ACLs
-- **Site-to-Site VPN** (Optional): Secure connectivity for external access
-- **Cloud Object Storage**: Object storage with encryption
-- **Transit Gateway** (Optional): Bridges VPC and PowerVS networks with local routing
-- **PowerVS Workspace** (Optional): IBM Power Systems Virtual Server workspace with private networking (ready for LPAR deployment)
+- **Module 01: VPC Infrastructure**: Foundation network with subnets, security groups, and network ACLs
+- **Module 02: Site-to-Site VPN** (Optional): Secure connectivity for external access (deployed after VPC)
+- **Module 03: Cloud Object Storage**: Object storage with encryption
+- **Module 04: Transit Gateway** (Optional): Bridges VPC and PowerVS networks with local routing
+- **Module 05: PowerVS Workspace** (Optional): IBM Power Systems Virtual Server workspace with private networking (ready for LPAR deployment)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -47,7 +47,8 @@ This landing zone deploys the following components:
 └─────────────────────────────────────────────────────────────────┘
 
 Note: This landing zone creates the infrastructure foundation.
-      Transit Gateway and PowerVS Workspace are optional components.
+      VPN, Transit Gateway, and PowerVS Workspace are optional components.
+      VPN is deployed after VPC but before COS.
       Users can deploy LPAR instances using the workspace after deployment.
 ```
 
@@ -164,11 +165,11 @@ terraform output
 
 Modules are deployed in the following order due to dependencies:
 
-1. **VPC Infrastructure** → Provides network foundation
-2. **Site-to-Site VPN** (Optional) → Requires VPC
-3. **Cloud Object Storage** → Independent service
-4. **Transit Gateway** (Optional) → Requires VPC
-5. **PowerVS Workspace** (Optional) → Requires Transit Gateway (if enabled)
+1. **Module 01: VPC Infrastructure** → Provides network foundation
+2. **Module 02: Site-to-Site VPN** (Optional) → Secure connectivity for external access (requires VPC)
+3. **Module 03: Cloud Object Storage** → Independent service
+4. **Module 04: Transit Gateway** (Optional) → Requires VPC
+5. **Module 05: PowerVS Workspace** (Optional) → Requires Transit Gateway (if enabled)
 
 **Note:** After deployment, users can create LPAR instances in the PowerVS workspace using:
 - IBM Cloud Console
