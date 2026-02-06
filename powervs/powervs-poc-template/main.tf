@@ -83,7 +83,7 @@ module "vpc" {
       name        = "${var.prefix}-vpn-gateway"
       subnet_name = "subnet-a"
       mode        = "route"
-      connections = []
+      resource_group = "${var.resource_group_name}"
     }
   ] : []
 
@@ -112,9 +112,9 @@ module "vpn" {
   # VPN Connections Configuration
   vpn_connections = [
     for idx, conn in var.vpn_connections : {
-      vpn_connection_name = conn.name
+      name = conn.name
       preshared_key       = conn.preshared_key
-      admin_state_up      = true
+      is_admin_state_up      = true
       establish_mode      = "bidirectional"
 
       # IKE Policy Configuration
@@ -252,11 +252,8 @@ module "transit_gateway" {
   # VPC Connection
   vpc_connections = [
     {
-      vpc_id               = module.vpc.vpc_id
       vpc_crn              = module.vpc.vpc_crn
       connection_name      = "${var.prefix}-vpc-connection"
-      network_type         = "vpc"
-      base_connection_type = "vpc"
     }
   ]
 
@@ -300,7 +297,6 @@ module "powervs_workspace" {
   pi_private_subnet_1 = {
     name        = "${var.prefix}-powervs-subnet"
     cidr        = var.powervs_subnet_cidr
-    dns_servers = var.powervs_dns_servers
   }
 
   # No additional subnets needed
