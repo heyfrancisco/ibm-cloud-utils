@@ -274,6 +274,11 @@ module "powervs_workspace" {
   source  = "terraform-ibm-modules/powervs-workspace/ibm"
   version = "4.1.2"
 
+  # Provider Configuration - Use PowerVS-specific provider with zone
+  providers = {
+    ibm = ibm.powervs
+  }
+
   # Workspace Configuration
   pi_workspace_name    = "${var.prefix}-powervs-workspace"
   pi_zone              = var.powervs_zone
