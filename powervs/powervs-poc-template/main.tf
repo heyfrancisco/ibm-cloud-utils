@@ -24,7 +24,6 @@ module "vpc" {
   # Core VPC Configuration
   resource_group_id = data.ibm_resource_group.resource_group.id
   region            = var.region
-  prefix            = var.prefix
   name              = "${var.prefix}-${var.vpc_name}"
   tags              = var.tags
 
