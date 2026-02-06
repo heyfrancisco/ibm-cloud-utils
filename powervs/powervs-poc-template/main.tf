@@ -31,6 +31,12 @@ module "vpc" {
   # Network Configuration
   network_cidrs = [var.vpc_cidr]
 
+  use_public_gateways = {
+    zone-1 = true
+    zone-2 = false
+    zone-3 = false
+  }
+
   subnets = {
     zone-1 = [
       {
