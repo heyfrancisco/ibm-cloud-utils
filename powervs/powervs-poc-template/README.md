@@ -149,11 +149,6 @@ terraform output
 ├── terraform.tfvars.template        # Variable values template
 ├── main.tf                          # Root module orchestration (uses registry modules)
 ├── outputs.tf                       # Root outputs
-│
-└── docs/                            # Additional documentation
-    ├── IMPLEMENTATION_PLAN.md         # Detailed implementation guide
-    ├── TROUBLESHOOTING.md             # Common issues and solutions
-    └── MONITORING.md                  # Monitoring and maintenance
 
 ```
 
@@ -190,12 +185,6 @@ Examples:
 - PowerVS Workspace: `myproject-pvs-ws`
 - Transit Gateway: `myproject-tgw`
 - COS Instance: `myproject-cos`
-
-## 📖 Detailed Documentation
-
-- **[docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md)**: Complete implementation guide with step-by-step instructions
-- **[docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)**: Common issues and solutions
-- **[docs/MONITORING.md](docs/MONITORING.md)**: Monitoring and maintenance guide
 
 ## 🔐 Security Best Practices
 
