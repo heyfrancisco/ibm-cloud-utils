@@ -35,10 +35,10 @@ resource "ibm_iam_access_group_policy" "policy-account-management" {
 }
 
 # Service: Resource Group only
-# Enables to create RG 
+# Enables to create RG
 resource "ibm_iam_access_group_policy" "policy-resource-group" {
   access_group_id = ibm_iam_access_group.ag-admin.id
-  roles           = ["Viewer", "Reader", "Editor"]
+  roles           = ["Viewer", "Editor"]
   resources {
     resource_type = "resource-group"
   }
