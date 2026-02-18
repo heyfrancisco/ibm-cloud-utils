@@ -22,7 +22,7 @@ module "vpc" {
   version = "8.7.0"
 
   # Core VPC Configuration
-  resource_group_id = data.ibm_resource_group.resource_group.id
+  resource_group_id = data.ibm_resource_group.vpc_resource_group.id
   region            = var.region
   name              = "${var.prefix}-${var.vpc_name}"
   tags              = var.tags
@@ -42,7 +42,7 @@ module "vpc" {
         name           = "subnet-a"
         cidr           = var.subnet_cidr
         public_gateway = var.enable_public_gateway
-        acl_name       = "vpc-acl"
+        acl_name       = "${var.prefix}-vpc-acl"
       }
     ]
   }
@@ -114,7 +114,7 @@ module "vpn" {
   # Use existing VPN gateway from VPC module
   create_vpn_gateway      = false
   existing_vpn_gateway_id = module.vpc.vpn_gateways_data[0].id
-  resource_group_id       = data.ibm_resource_group.resource_group.id
+  resource_group_id       = data.ibm_resource_group.vpc_resource_group.id
 
   # VPN Connections Configuration
   vpn_connections = [
@@ -201,7 +201,7 @@ module "cos" {
   # COS Instance Configuration
   create_cos_instance = true
   cos_instance_name   = "${var.prefix}-${var.cos_instance_name}"
-  resource_group_id   = data.ibm_resource_group.resource_group.id
+  resource_group_id   = data.ibm_resource_group.cos_resource_group.id
   cos_plan            = var.cos_plan
   cos_location        = "global"
   cos_tags            = var.tags
@@ -291,7 +291,7 @@ module "powervs_workspace" {
   # Workspace Configuration
   pi_workspace_name    = "${var.prefix}-powervs-workspace"
   pi_zone              = var.powervs_zone
-  pi_resource_group_id = data.ibm_resource_group.resource_group.id
+  pi_resource_group_id = data.ibm_resource_group.powervs_resource_group.id
   pi_tags              = var.tags
 
   # SSH Key Configuration
@@ -300,15 +300,21 @@ module "powervs_workspace" {
     value = var.powervs_ssh_public_key
   }
 
-  # Private Subnet Configuration
-  pi_private_subnet_1 = {
-    name        = "${var.prefix}-powervs-subnet"
-    cidr        = var.powervs_subnet_cidr
-  }
+  # Dynamic Private Subnet Configuration (supports 1-3 subnets)
+  pi_private_subnet_1 = length(var.powervs_subnets) >= 1 ? {
+    name = "${var.prefix}-${var.powervs_subnets[0].name}"
+    cidr = var.powervs_subnets[0].cidr
+  } : null
 
-  # No additional subnets needed
-  pi_private_subnet_2 = null
-  pi_private_subnet_3 = null
+  pi_private_subnet_2 = length(var.powervs_subnets) >= 2 ? {
+    name = "${var.prefix}-${var.powervs_subnets[1].name}"
+    cidr = var.powervs_subnets[1].cidr
+  } : null
+
+  pi_private_subnet_3 = length(var.powervs_subnets) >= 3 ? {
+    name = "${var.prefix}-${var.powervs_subnets[2].name}"
+    cidr = var.powervs_subnets[2].cidr
+  } : null
 
   # Transit Gateway Connection
   pi_transit_gateway_connection = var.enable_transit_gateway ? {

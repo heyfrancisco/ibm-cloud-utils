@@ -145,14 +145,31 @@ output "powervs_zone" {
   value       = var.enable_powervs ? module.powervs_workspace[0].pi_zone : null
 }
 
-output "powervs_subnet_id" {
-  description = "ID of PowerVS private subnet"
-  value       = var.enable_powervs ? module.powervs_workspace[0].pi_private_subnet_1.id : null
+output "powervs_subnets" {
+  description = "List of PowerVS private subnets with their details"
+  value = var.enable_powervs ? {
+    subnet_1 = module.powervs_workspace[0].pi_private_subnet_1
+    subnet_2 = module.powervs_workspace[0].pi_private_subnet_2
+    subnet_3 = module.powervs_workspace[0].pi_private_subnet_3
+  } : null
 }
 
-output "powervs_subnet_name" {
-  description = "Name of PowerVS private subnet"
-  value       = var.enable_powervs ? module.powervs_workspace[0].pi_private_subnet_1.name : null
+output "powervs_subnet_ids" {
+  description = "List of PowerVS subnet IDs"
+  value = var.enable_powervs ? compact([
+    try(module.powervs_workspace[0].pi_private_subnet_1.id, null),
+    try(module.powervs_workspace[0].pi_private_subnet_2.id, null),
+    try(module.powervs_workspace[0].pi_private_subnet_3.id, null)
+  ]) : []
+}
+
+output "powervs_subnet_names" {
+  description = "List of PowerVS subnet names"
+  value = var.enable_powervs ? compact([
+    try(module.powervs_workspace[0].pi_private_subnet_1.name, null),
+    try(module.powervs_workspace[0].pi_private_subnet_2.name, null),
+    try(module.powervs_workspace[0].pi_private_subnet_3.name, null)
+  ]) : []
 }
 
 ##############################################################################

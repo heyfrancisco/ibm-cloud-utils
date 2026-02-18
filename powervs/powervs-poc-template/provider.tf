@@ -17,9 +17,24 @@
 # Data Sources
 ##############################################################################
 
-# Look up resource group by name
+# Look up default resource group by name
 data "ibm_resource_group" "resource_group" {
   name = var.resource_group_name
+}
+
+# Look up VPC resource group (uses default if not specified)
+data "ibm_resource_group" "vpc_resource_group" {
+  name = var.vpc_resource_group_name != null ? var.vpc_resource_group_name : var.resource_group_name
+}
+
+# Look up COS resource group (uses default if not specified)
+data "ibm_resource_group" "cos_resource_group" {
+  name = var.cos_resource_group_name != null ? var.cos_resource_group_name : var.resource_group_name
+}
+
+# Look up PowerVS resource group (uses default if not specified)
+data "ibm_resource_group" "powervs_resource_group" {
+  name = var.powervs_resource_group_name != null ? var.powervs_resource_group_name : var.resource_group_name
 }
 
 ##############################################################################

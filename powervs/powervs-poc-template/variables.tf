@@ -44,8 +44,26 @@ variable "region" {
 }
 
 variable "resource_group_name" {
-  description = "Name of the resource group where all resources will be created"
+  description = "Name of the default resource group (used if specific resource groups are not provided)"
   type        = string
+}
+
+variable "vpc_resource_group_name" {
+  description = "Name of the resource group for VPC and VPN resources. If not provided, uses resource_group_name"
+  type        = string
+  default     = null
+}
+
+variable "cos_resource_group_name" {
+  description = "Name of the resource group for Cloud Object Storage resources. If not provided, uses resource_group_name"
+  type        = string
+  default     = null
+}
+
+variable "powervs_resource_group_name" {
+  description = "Name of the resource group for PowerVS resources. If not provided, uses resource_group_name"
+  type        = string
+  default     = null
 }
 
 variable "tags" {
@@ -319,25 +337,46 @@ variable "powervs_workspace_name" {
   default     = "pvs-ws"
 }
 
-variable "powervs_subnet_name" {
-  description = "Name for PowerVS private subnet"
-  type        = string
-  default     = "pvs-sn"
-}
-
-variable "powervs_subnet_cidr" {
-  description = "CIDR block for PowerVS private subnet"
-  type        = string
-  default     = "192.168.100.0/24"
+variable "powervs_subnets" {
+  description = <<-EOT
+    List of PowerVS private subnets to create. Each subnet requires a name and CIDR block.
+    
+    Example:
+    powervs_subnets = [
+      {
+        name = "subnet-1"
+        cidr = "192.168.100.0/24"
+      },
+      {
+        name = "subnet-2"
+        cidr = "192.168.101.0/24"
+      }
+    ]
+  EOT
+  type = list(object({
+    name = string
+    cidr = string
+  }))
+  default = [
+    {
+      name = "pvs-sn-1"
+      cidr = "192.168.100.0/24"
+    }
+  ]
 
   validation {
-    condition     = can(cidrhost(var.powervs_subnet_cidr, 0))
-    error_message = "PowerVS subnet CIDR must be a valid IPv4 CIDR block."
+    condition     = length(var.powervs_subnets) > 0 && length(var.powervs_subnets) <= 3
+    error_message = "You must define between 1 and 3 PowerVS subnets."
+  }
+
+  validation {
+    condition     = alltrue([for subnet in var.powervs_subnets : can(cidrhost(subnet.cidr, 0))])
+    error_message = "All PowerVS subnet CIDRs must be valid IPv4 CIDR blocks."
   }
 }
 
 variable "powervs_dns_servers" {
-  description = "List of DNS servers for PowerVS subnet"
+  description = "List of DNS servers for PowerVS subnets (applied to all subnets)"
   type        = list(string)
   default     = ["8.8.8.8", "8.8.4.4"]
 }

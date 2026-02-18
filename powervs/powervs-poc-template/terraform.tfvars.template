@@ -33,9 +33,15 @@ prefix = "<REQUIRED>"  # e.g., "myproject"
 # Options: us-south, us-east, eu-gb, eu-de, jp-tok, jp-osa, au-syd, ca-tor, br-sao
 region = "us-south"
 
-# Resource group name where all resources will be created
+# Resource group name where all resources will be created (default for all modules)
 # Get name with: ibmcloud resource groups
 resource_group_name = "<REQUIRED>"  # e.g., "default" or "my-resource-group"
+
+# Optional: Separate resource groups for each module
+# If not specified, resource_group_name will be used for all modules
+# vpc_resource_group_name     = "vpc-resource-group"
+# cos_resource_group_name     = "cos-resource-group"
+# powervs_resource_group_name = "powervs-resource-group"
 
 # Tags for resource organization and cost tracking
 tags = [
@@ -123,14 +129,26 @@ powervs_zone = "dal10"
 # PowerVS workspace name suffix
 powervs_workspace_name = "powervs-workspace"
 
-# PowerVS private subnet name
-powervs_subnet_name = "powervs-subnet"
-
-# CIDR block for PowerVS private subnet
+# PowerVS private subnets (supports 1-3 subnets)
+# Each subnet requires a name and CIDR block
 # Must not conflict with VPC or other networks
-powervs_subnet_cidr = "192.168.100.0/24"
+powervs_subnets = [
+  {
+    name = "subnet-1"
+    cidr = "192.168.100.0/24"
+  }
+  # Uncomment to add more subnets (up to 3 total)
+  # {
+  #   name = "subnet-2"
+  #   cidr = "192.168.101.0/24"
+  # },
+  # {
+  #   name = "subnet-3"
+  #   cidr = "192.168.102.0/24"
+  # }
+]
 
-# DNS servers for PowerVS subnet
+# DNS servers for PowerVS subnets (applied to all subnets)
 powervs_dns_servers = ["8.8.8.8", "8.8.4.4"]
 
 # SSH key name for PowerVS workspace
@@ -184,10 +202,15 @@ vpe_gateway_name = "vpe-cos"
 # subnet_cidr           = "10.10.10.0/24"
 # enable_vpn            = false
 # powervs_zone          = "dal10"
-# powervs_subnet_cidr   = "192.168.100.0/24"
+# powervs_subnets = [
+#   {
+#     name = "dev-subnet-1"
+#     cidr = "192.168.100.0/24"
+#   }
+# ]
 
-# EXAMPLE 2: Production Environment with VPN
-# -------------------------------------------
+# EXAMPLE 2: Production Environment with VPN and Multiple PowerVS Subnets
+# ------------------------------------------------------------------------
 # prefix                = "prod-app"
 # region                = "us-south"
 # vpc_zone              = "us-south-1"
@@ -203,9 +226,42 @@ vpe_gateway_name = "vpe-cos"
 #   }
 # ]
 # powervs_zone          = "dal10"
-# powervs_subnet_cidr   = "192.168.200.0/24"
+# powervs_subnets = [
+#   {
+#     name = "prod-subnet-1"
+#     cidr = "192.168.200.0/24"
+#   },
+#   {
+#     name = "prod-subnet-2"
+#     cidr = "192.168.201.0/24"
+#   }
+# ]
 # cos_encryption_enabled = true
 # kms_key_crn           = "crn:v1:bluemix:public:kms:..."
+
+# EXAMPLE 3: Multi-Resource Group Setup
+# --------------------------------------
+# prefix                      = "enterprise-app"
+# region                      = "us-south"
+# resource_group_name         = "default"
+# vpc_resource_group_name     = "vpc-rg"
+# cos_resource_group_name     = "storage-rg"
+# powervs_resource_group_name = "compute-rg"
+# powervs_zone                = "dal10"
+# powervs_subnets = [
+#   {
+#     name = "mgmt-subnet"
+#     cidr = "192.168.100.0/24"
+#   },
+#   {
+#     name = "app-subnet"
+#     cidr = "192.168.101.0/24"
+#   },
+#   {
+#     name = "db-subnet"
+#     cidr = "192.168.102.0/24"
+#   }
+# ]
 
 ##############################################################################
 # Security Best Practices
