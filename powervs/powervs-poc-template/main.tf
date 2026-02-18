@@ -50,7 +50,7 @@ module "vpc" {
   # Network ACL Configuration
   network_acls = [
     {
-      name                         = "vpc-acl"
+      name                         = "${var.prefix}-vpc-acl"
       add_ibm_cloud_internal_rules = true
       add_vpc_connectivity_rules   = true
       prepend_ibm_rules            = true
@@ -75,8 +75,15 @@ module "vpc" {
   ]
 
   # Security Group Configuration
-  clean_default_sg_acl = var.clean_default_sg_acl
-
+  security_group_rules = [
+    {
+      name       = "${var.prefix}-inbound-ssh"
+      direction  = "inbound"
+      remote     = "0.0.0.0/0"
+      local      = "0.0.0.0/0"
+      ip_version = "ipv4"
+    }]
+  
   # VPN Gateway Configuration
   vpn_gateways = var.enable_vpn_gateway ? [
     {
