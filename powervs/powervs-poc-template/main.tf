@@ -157,10 +157,14 @@ module "vpn" {
       ]
 
       # Local Configuration (must be a list)
+      # For route-based VPN, each local entry must have exactly 2 IKE identities
       local_config = [
         {
           cidrs = conn.local_cidrs
           ike_identities = [
+            {
+              type = "ipv4_address"
+            },
             {
               type = "ipv4_address"
             }
