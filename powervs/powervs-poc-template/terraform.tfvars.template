@@ -94,6 +94,28 @@ vpn_mode = "route"
 # IKE protocol version: 2 (recommended) or 1
 ike_version = 2
 
+# VPN Policy Configuration (Optional)
+# Customize IKE and IPSec policies for the VPN gateway
+# If not specified, secure defaults will be used
+
+# IKE Policy Settings
+# ike_authentication_algorithm = "sha256"  # Options: sha256, sha384, sha512
+# ike_encryption_algorithm     = "aes256"  # Options: aes128, aes192, aes256
+# ike_dh_group                 = 14        # Options: 14-24, 31
+# ike_key_lifetime             = 28800     # Seconds (300-86400)
+
+# IPSec Policy Settings
+# ipsec_authentication_algorithm = "sha256"     # Options: sha256, sha384, sha512, disabled
+# ipsec_encryption_algorithm     = "aes256"     # Options: aes128, aes192, aes256, aes128gcm16, aes192gcm16, aes256gcm16
+# ipsec_pfs                      = "group_14"   # Options: disabled, group_2, group_5, group_14
+# ipsec_key_lifetime             = 3600         # Seconds (300-86400)
+
+# Example: Using stronger encryption
+# ike_authentication_algorithm   = "sha384"
+# ike_encryption_algorithm       = "aes256"
+# ipsec_authentication_algorithm = "sha384"
+# ipsec_encryption_algorithm     = "aes256gcm16"
+
 ##############################################################################
 # Cloud Object Storage Configuration
 ##############################################################################

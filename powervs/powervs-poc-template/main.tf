@@ -109,35 +109,14 @@ module "vpc" {
 module "vpn" {
   count   = var.enable_vpn_gateway && length(var.vpn_connections) > 0 ? 1 : 0
   source  = "terraform-ibm-modules/site-to-site-vpn/ibm"
-  version = "~> 5.0"
+  version = "~> 3.0.5"
 
   # Use existing VPN gateway from VPC module
   create_vpn_gateway      = false
   existing_vpn_gateway_id = module.vpc.vpn_gateways_data[0].id
   resource_group_id       = data.ibm_resource_group.vpc_resource_group.id
 
-  # Create shared IKE policy for all connections
-  create_ike_policy = true
-  ike_policy_config = {
-    name                     = "${var.prefix}-ike-policy"
-    authentication_algorithm = "sha256"
-    encryption_algorithm     = "aes256"
-    dh_group                 = 14
-    ike_version              = 2
-    key_lifetime             = 28800
-  }
-
-  # Create shared IPSec policy for all connections
-  create_ipsec_policy = true
-  ipsec_policy_config = {
-    name                     = "${var.prefix}-ipsec-policy"
-    authentication_algorithm = "sha256"
-    encryption_algorithm     = "aes256"
-    pfs                      = "group_14"
-    key_lifetime             = 3600
-  }
-
-  # VPN Connections Configuration (simplified - no nested policies)
+  # VPN Connections Configuration with per-connection policies
   vpn_connections = [
     for idx, conn in var.vpn_connections : {
       name              = conn.name
@@ -145,28 +124,54 @@ module "vpn" {
       is_admin_state_up = true
       establish_mode    = "bidirectional"
 
-      # Peer Gateway Configuration
-      peer = {
-        peer_address = conn.peer_address
-        cidrs        = conn.peer_cidrs
-        ike_identity = {
-          type  = "ipv4_address"
-          value = conn.peer_address
-        }
+      # Per-connection IKE Policy
+      create_ike_policy = true
+      ike_policy_config = {
+        name                     = "${var.prefix}-ike-policy-${idx + 1}"
+        authentication_algorithm = var.ike_authentication_algorithm
+        encryption_algorithm     = var.ike_encryption_algorithm
+        dh_group                 = var.ike_dh_group
       }
 
-      # Local Gateway Configuration
-      local = {
-        cidrs = conn.local_cidrs
-        ike_identities = [{
-          type = "ipv4_address"
-        }]
+      # Per-connection IPSec Policy
+      create_ipsec_policy = true
+      ipsec_policy_config = {
+        name                     = "${var.prefix}-ipsec-policy-${idx + 1}"
+        authentication_algorithm = var.ipsec_authentication_algorithm
+        encryption_algorithm     = var.ipsec_encryption_algorithm
+        pfs                      = var.ipsec_pfs
       }
+
+      # Peer Configuration (must be a list)
+      peer_config = [
+        {
+          address = conn.peer_address
+          cidrs   = conn.peer_cidrs
+          ike_identity = [
+            {
+              type  = "ipv4_address"
+              value = conn.peer_address
+            }
+          ]
+        }
+      ]
+
+      # Local Configuration (must be a list)
+      local_config = [
+        {
+          cidrs = conn.local_cidrs
+          ike_identities = [
+            {
+              type = "ipv4_address"
+            }
+          ]
+        }
+      ]
 
       # Dead Peer Detection
-      action   = "restart"
-      interval = 30
-      timeout  = 120
+      dpd_action         = "restart"
+      dpd_check_interval = 30
+      dpd_max_timeout    = 120
     }
   ]
 

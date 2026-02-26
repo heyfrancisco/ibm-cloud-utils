@@ -186,6 +186,151 @@ Examples:
 - Transit Gateway: `myproject-tgw`
 - COS Instance: `myproject-cos`
 
+### VPN Policy Customization
+
+The VPN gateway supports customization of IKE (Internet Key Exchange) and IPSec policies to meet specific security requirements or compliance needs. When VPN is enabled, a **shared IKE policy and IPSec policy** are created and applied to all VPN connections. If not specified, secure default values are used.
+
+#### IKE Policy Configuration
+
+| Variable | Description | Default | Valid Options |
+|----------|-------------|---------|---------------|
+| `ike_authentication_algorithm` | IKE authentication algorithm | `sha256` | `sha256`, `sha384`, `sha512` |
+| `ike_encryption_algorithm` | IKE encryption algorithm | `aes256` | `aes128`, `aes192`, `aes256` |
+| `ike_dh_group` | Diffie-Hellman group for key exchange | `14` | `14`, `15`, `16`, `17`, `18`, `19`, `20`, `21`, `22`, `23`, `24`, `31` |
+| `ike_key_lifetime` | IKE key lifetime in seconds | `28800` | `300`-`86400` |
+
+#### IPSec Policy Configuration
+
+| Variable | Description | Default | Valid Options |
+|----------|-------------|---------|---------------|
+| `ipsec_authentication_algorithm` | IPSec authentication algorithm | `sha256` | `sha256`, `sha384`, `sha512`, `disabled` |
+| `ipsec_encryption_algorithm` | IPSec encryption algorithm | `aes256` | `aes128`, `aes192`, `aes256`, `aes128gcm16`, `aes192gcm16`, `aes256gcm16` |
+| `ipsec_pfs` | Perfect Forward Secrecy group | `group_14` | `disabled`, `group_2`, `group_5`, `group_14` |
+| `ipsec_key_lifetime` | IPSec key lifetime in seconds | `3600` | `300`-`86400` |
+
+#### Configuration Examples
+
+**Using default policies (recommended for most use cases):**
+```hcl
+# In terraform.tfvars
+enable_vpn_gateway = true
+
+vpn_connections = [
+  {
+    name          = "office-to-cloud"
+    peer_address  = "203.0.113.10"
+    preshared_key = "your-secure-32-character-key-here"
+    local_cidrs   = ["10.10.10.0/24"]
+    peer_cidrs    = ["192.168.1.0/24"]
+  }
+]
+
+# Policies will use secure defaults:
+# IKE: sha256, aes256, DH group 14, 28800s lifetime
+# IPSec: sha256, aes256, group_14 PFS, 3600s lifetime
+```
+
+**Custom stronger encryption for high-security environments:**
+```hcl
+# In terraform.tfvars
+enable_vpn_gateway = true
+
+# IKE Policy - Stronger settings
+ike_authentication_algorithm = "sha384"
+ike_encryption_algorithm     = "aes256"
+ike_dh_group                 = 19
+ike_key_lifetime             = 14400
+
+# IPSec Policy - Stronger settings with GCM
+ipsec_authentication_algorithm = "sha384"
+ipsec_encryption_algorithm     = "aes256gcm16"
+ipsec_pfs                      = "group_14"
+ipsec_key_lifetime             = 7200
+
+vpn_connections = [
+  {
+    name          = "datacenter-to-cloud"
+    peer_address  = "198.51.100.20"
+    preshared_key = "another-secure-32-character-key"
+    local_cidrs   = ["10.10.10.0/24"]
+    peer_cidrs    = ["172.16.0.0/16"]
+  }
+]
+```
+
+**Multiple VPN connections sharing the same policies:**
+```hcl
+# In terraform.tfvars
+enable_vpn_gateway = true
+
+# Single shared policy configuration
+ike_authentication_algorithm = "sha256"
+ike_encryption_algorithm     = "aes256"
+ike_dh_group                 = 14
+ike_key_lifetime             = 28800
+
+ipsec_authentication_algorithm = "sha256"
+ipsec_encryption_algorithm     = "aes256"
+ipsec_pfs                      = "group_14"
+ipsec_key_lifetime             = 3600
+
+# Multiple connections use the same policies
+vpn_connections = [
+  {
+    name          = "office-to-cloud"
+    peer_address  = "203.0.113.10"
+    preshared_key = "first-secure-32-character-key-here"
+    local_cidrs   = ["10.10.10.0/24"]
+    peer_cidrs    = ["192.168.1.0/24"]
+  },
+  {
+    name          = "datacenter-to-cloud"
+    peer_address  = "198.51.100.20"
+    preshared_key = "second-secure-32-character-key-here"
+    local_cidrs   = ["10.10.10.0/24"]
+    peer_cidrs    = ["172.16.0.0/16"]
+  }
+]
+```
+
+#### Security Recommendations
+
+- **Authentication Algorithms**: Use SHA256 or higher (SHA384, SHA512) for production environments. SHA256 provides good security with reasonable performance.
+
+- **Encryption Algorithms**:
+  - AES256 provides strong encryption for most use cases
+  - GCM modes (e.g., `aes256gcm16`) offer better performance with authenticated encryption
+  - GCM modes combine encryption and authentication in a single operation
+
+- **Diffie-Hellman Groups**:
+  - Use group 14 (2048-bit) or higher for adequate security
+  - Groups 19-24 (elliptic curve groups) provide stronger security with better performance
+  - Group 31 is also available for specific requirements
+
+- **Key Lifetimes**:
+  - Shorter lifetimes (e.g., 3600-7200 seconds) provide better security through more frequent key rotation
+  - Longer lifetimes reduce overhead but may increase risk if keys are compromised
+  - Balance security needs with performance requirements
+
+- **Perfect Forward Secrecy (PFS)**:
+  - Always enable PFS (group_14 recommended) to ensure session keys cannot be compromised even if long-term keys are
+  - PFS ensures that past communications remain secure even if future keys are compromised
+  - Only disable PFS if required for compatibility with legacy systems
+
+- **Preshared Keys**:
+  - Must be at least 32 characters (enforced by validation)
+  - Use strong, randomly generated keys
+  - Never reuse keys across different connections
+  - Store keys securely (use environment variables or secrets management)
+
+#### Important Notes
+
+- **Shared Policies**: All VPN connections in this deployment share the same IKE and IPSec policies. If you need different policies for different connections, deploy separate landing zones or use the IBM Cloud Console/CLI to create custom policies.
+
+- **Policy Compatibility**: Ensure your on-premises VPN gateway supports the chosen algorithms and settings. Mismatched policies will prevent VPN tunnel establishment.
+
+- **IKE Version**: This template uses IKEv2 by default, which is more secure and efficient than IKEv1. Ensure your peer gateway supports IKEv2.
+
 ## 🔐 Security Best Practices
 
 1. **API Key Management**

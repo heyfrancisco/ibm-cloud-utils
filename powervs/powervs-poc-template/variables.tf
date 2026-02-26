@@ -209,6 +209,99 @@ variable "ike_version" {
   }
 }
 
+# VPN Policy Configuration
+variable "ike_authentication_algorithm" {
+  description = "IKE authentication algorithm for VPN gateway"
+  type        = string
+  default     = "sha256"
+
+  validation {
+    condition     = contains(["sha256", "sha384", "sha512"], var.ike_authentication_algorithm)
+    error_message = "IKE authentication algorithm must be one of: sha256, sha384, sha512."
+  }
+}
+
+variable "ike_encryption_algorithm" {
+  description = "IKE encryption algorithm for VPN gateway"
+  type        = string
+  default     = "aes256"
+
+  validation {
+    condition     = contains(["aes128", "aes192", "aes256"], var.ike_encryption_algorithm)
+    error_message = "IKE encryption algorithm must be one of: aes128, aes192, aes256."
+  }
+}
+
+variable "ike_dh_group" {
+  description = "IKE Diffie-Hellman group for VPN gateway"
+  type        = number
+  default     = 14
+
+  validation {
+    condition = contains([
+      14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 31
+    ], var.ike_dh_group)
+    error_message = "IKE DH group must be one of: 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 31."
+  }
+}
+
+variable "ike_key_lifetime" {
+  description = "IKE key lifetime in seconds (300-86400)"
+  type        = number
+  default     = 28800
+
+  validation {
+    condition     = var.ike_key_lifetime >= 300 && var.ike_key_lifetime <= 86400
+    error_message = "IKE key lifetime must be between 300 and 86400 seconds."
+  }
+}
+
+variable "ipsec_authentication_algorithm" {
+  description = "IPSec authentication algorithm for VPN gateway"
+  type        = string
+  default     = "sha256"
+
+  validation {
+    condition     = contains(["sha256", "sha384", "sha512", "disabled"], var.ipsec_authentication_algorithm)
+    error_message = "IPSec authentication algorithm must be one of: sha256, sha384, sha512, disabled."
+  }
+}
+
+variable "ipsec_encryption_algorithm" {
+  description = "IPSec encryption algorithm for VPN gateway"
+  type        = string
+  default     = "aes256"
+
+  validation {
+    condition = contains([
+      "aes128", "aes192", "aes256", "aes128gcm16", "aes192gcm16", "aes256gcm16"
+    ], var.ipsec_encryption_algorithm)
+    error_message = "IPSec encryption algorithm must be one of: aes128, aes192, aes256, aes128gcm16, aes192gcm16, aes256gcm16."
+  }
+}
+
+variable "ipsec_pfs" {
+  description = "IPSec Perfect Forward Secrecy group for VPN gateway"
+  type        = string
+  default     = "group_14"
+
+  validation {
+    condition     = contains(["disabled", "group_2", "group_5", "group_14"], var.ipsec_pfs)
+    error_message = "IPSec PFS must be one of: disabled, group_2, group_5, group_14."
+  }
+}
+
+variable "ipsec_key_lifetime" {
+  description = "IPSec key lifetime in seconds (300-86400)"
+  type        = number
+  default     = 3600
+
+  validation {
+    condition     = var.ipsec_key_lifetime >= 300 && var.ipsec_key_lifetime <= 86400
+    error_message = "IPSec key lifetime must be between 300 and 86400 seconds."
+  }
+}
+
 ##############################################################################
 # Cloud Object Storage Variables
 ##############################################################################
