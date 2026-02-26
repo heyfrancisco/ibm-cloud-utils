@@ -90,7 +90,6 @@ module "vpc" {
       name        = "${var.prefix}-vpn-gateway"
       subnet_name = "subnet-a"
       mode        = "route"
-      resource_group = "${var.resource_group_name}"
     }
   ] : []
 
@@ -163,10 +162,12 @@ module "vpn" {
           cidrs = conn.local_cidrs
           ike_identities = [
             {
-              type = "ipv4_address"
+              type  = "ipv4_address"
+              value = module.vpc.vpn_gateways_data[0].public_ip_address
             },
             {
-              type = "ipv4_address"
+              type  = "ipv4_address"
+              value = module.vpc.vpn_gateways_data[0].public_ip_address2
             }
           ]
         }
