@@ -53,15 +53,9 @@ output "vpn_gateway_public_ips" {
 # VPN Outputs (Optional)
 ##############################################################################
 
-output "vpn_connection_ids" {
-  description = "Map of VPN connection names to IDs"
-  value       = var.enable_vpn_gateway && length(var.vpn_connections) > 0 ? module.vpn[0].vpn_connection_ids : {}
-}
-
-output "vpn_connection_statuses" {
-  description = "Status of each VPN connection"
-  value       = var.enable_vpn_gateway && length(var.vpn_connections) > 0 ? module.vpn[0].vpn_connection_statuses : {}
-}
+# Note: VPN connection details are managed by the site-to-site-vpn module
+# The VPN gateway information is available through the VPC module outputs above
+# Individual connection IDs and statuses can be queried using IBM Cloud CLI or API
 
 ##############################################################################
 # Cloud Object Storage Outputs
