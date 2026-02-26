@@ -40,6 +40,7 @@ data "ibm_resource_group" "powervs_resource_group" {
 ##############################################################################
 # IBM Cloud Provider
 # Documentation: https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs
+##############################################################################
 provider "ibm" {
   # IBM Cloud API Key
   # Best practice: Use environment variable IC_API_KEY instead of hardcoding

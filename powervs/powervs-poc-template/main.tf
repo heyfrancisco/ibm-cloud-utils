@@ -229,7 +229,7 @@ module "cos" {
 
   # Lifecycle Policies
   archive_days = var.cos_archive_days > 0 ? var.cos_archive_days : null
-  archive_type = var.cos_archive_days > 0 ? "Glacier" : null
+  archive_type = var.cos_archive_days > 0 ? "Glacier" : "Glacier"
   expire_days  = var.cos_expire_days > 0 ? var.cos_expire_days : null
 
   # Optional Features
