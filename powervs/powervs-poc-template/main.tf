@@ -109,39 +109,41 @@ module "vpc" {
 module "vpn" {
   count   = var.enable_vpn_gateway && length(var.vpn_connections) > 0 ? 1 : 0
   source  = "terraform-ibm-modules/site-to-site-vpn/ibm"
-  version = "3.0.4"
+  version = "~> 5.0"
 
   # Use existing VPN gateway from VPC module
   create_vpn_gateway      = false
   existing_vpn_gateway_id = module.vpc.vpn_gateways_data[0].id
   resource_group_id       = data.ibm_resource_group.vpc_resource_group.id
 
-  # VPN Connections Configuration
+  # Create shared IKE policy for all connections
+  create_ike_policy = true
+  ike_policy_config = {
+    name                     = "${var.prefix}-ike-policy"
+    authentication_algorithm = "sha256"
+    encryption_algorithm     = "aes256"
+    dh_group                 = 14
+    ike_version              = 2
+    key_lifetime             = 28800
+  }
+
+  # Create shared IPSec policy for all connections
+  create_ipsec_policy = true
+  ipsec_policy_config = {
+    name                     = "${var.prefix}-ipsec-policy"
+    authentication_algorithm = "sha256"
+    encryption_algorithm     = "aes256"
+    pfs                      = "group_14"
+    key_lifetime             = 3600
+  }
+
+  # VPN Connections Configuration (simplified - no nested policies)
   vpn_connections = [
     for idx, conn in var.vpn_connections : {
-      name = conn.name
-      preshared_key       = conn.preshared_key
-      is_admin_state_up      = true
-      establish_mode      = "bidirectional"
-
-      # IKE Policy Configuration
-      ike_policy = {
-        name                     = "${var.prefix}-ike-policy-${idx + 1}"
-        authentication_algorithm = "sha256"
-        encryption_algorithm     = "aes256"
-        dh_group                 = 14
-        ike_version              = 2
-        key_lifetime             = 28800
-      }
-
-      # IPSec Policy Configuration
-      ipsec_policy = {
-        name                     = "${var.prefix}-ipsec-policy-${idx + 1}"
-        authentication_algorithm = "sha256"
-        encryption_algorithm     = "aes256"
-        pfs                      = "group_14"
-        key_lifetime             = 3600
-      }
+      name              = conn.name
+      preshared_key     = conn.preshared_key
+      is_admin_state_up = true
+      establish_mode    = "bidirectional"
 
       # Peer Gateway Configuration
       peer = {
@@ -175,7 +177,7 @@ module "vpn" {
   routes = var.create_vpn_routes ? flatten([
     for idx, conn in var.vpn_connections : [
       for cidr in conn.peer_cidrs : {
-        route_name          = "${var.prefix}-vpn-route-${idx + 1}-${replace(cidr, "/", "-")}"
+        name                = "${var.prefix}-vpn-route-${idx + 1}-${replace(cidr, "/", "-")}"
         zone                = var.vpc_zone
         destination         = cidr
         next_hop            = "0.0.0.0"
