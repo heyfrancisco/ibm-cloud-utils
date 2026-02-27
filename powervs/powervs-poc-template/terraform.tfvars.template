@@ -74,10 +74,10 @@ enable_public_gateway = true
 ##############################################################################
 
 # Enable VPN gateway for site-to-site connectivity
-enable_vpn = false
+enable_vpn_gateway = false
 
 # VPN connections configuration
-# Uncomment and configure if enable_vpn = true
+# Uncomment and configure if enable_vpn_gateway = true
 # vpn_connections = [
 #   {
 #     name          = "office-vpn"

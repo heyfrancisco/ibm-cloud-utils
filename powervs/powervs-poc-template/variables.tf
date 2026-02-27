@@ -117,7 +117,7 @@ variable "enable_public_gateway" {
 }
 
 variable "enable_vpn_gateway" {
-  description = "Enable VPN gateway creation in VPC"
+  description = "Enable VPN gateway creation in VPC for site-to-site connectivity"
   type        = bool
   default     = false
 }
@@ -143,12 +143,6 @@ variable "create_vpn_routes" {
 ##############################################################################
 # VPN Variables (Optional)
 ##############################################################################
-
-variable "enable_vpn" {
-  description = "Enable VPN gateway deployment for site-to-site connectivity"
-  type        = bool
-  default     = false
-}
 
 variable "vpn_connections" {
   description = <<-EOT
