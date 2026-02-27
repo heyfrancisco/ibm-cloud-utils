@@ -44,11 +44,6 @@ output "vpn_gateway_id" {
   value       = var.enable_vpn_gateway ? module.vpc.vpn_gateways_data[0].id : null
 }
 
-output "vpn_gateway_public_ips" {
-  description = "Public IPs of VPN gateway (if enabled)"
-  value       = var.enable_vpn_gateway ? [for member in module.vpc.vpn_gateways_data[0].members : member.public_ip.address] : []
-}
-
 ##############################################################################
 # VPN Outputs (Optional)
 ##############################################################################
