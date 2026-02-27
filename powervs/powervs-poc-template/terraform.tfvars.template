@@ -222,7 +222,7 @@ vpe_gateway_name = "vpe-cos"
 # region                = "us-south"
 # vpc_zone              = "us-south-1"
 # subnet_cidr           = "10.10.10.0/24"
-# enable_vpn            = false
+# enable_vpn_gateway    = false
 # powervs_zone          = "dal10"
 # powervs_subnets = [
 #   {
@@ -237,7 +237,7 @@ vpe_gateway_name = "vpe-cos"
 # region                = "us-south"
 # vpc_zone              = "us-south-1"
 # subnet_cidr           = "10.20.10.0/24"
-# enable_vpn            = true
+# enable_vpn_gateway    = true
 # vpn_connections = [
 #   {
 #     name          = "hq-vpn"
