@@ -469,16 +469,14 @@ variable "powervs_dns_servers" {
 }
 
 variable "powervs_ssh_key_name" {
-  description = "Name for PowerVS SSH key. If null, no SSH key will be created in the PowerVS workspace."
+  description = "Name for PowerVS SSH key. Only letters, numbers, hyphens, and underscores are allowed."
   type        = string
-  default     = null
 }
 
 variable "powervs_ssh_public_key" {
-  description = "Public SSH key content for PowerVS instance access. Required if powervs_ssh_key_name is set."
+  description = "Public SSH key content for PowerVS instance access."
   type        = string
   sensitive   = true
-  default     = null
 }
 
 ##############################################################################

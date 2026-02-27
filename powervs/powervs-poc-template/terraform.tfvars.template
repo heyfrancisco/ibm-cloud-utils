@@ -173,14 +173,14 @@ powervs_subnets = [
 # DNS servers for PowerVS subnets (applied to all subnets)
 powervs_dns_servers = ["8.8.8.8", "8.8.4.4"]
 
-# SSH key name for PowerVS workspace (optional - comment out to skip SSH key creation)
-# Only letters, numbers, hyphens, and underscores are allowed
-# powervs_ssh_key_name = "myproject-ssh-key"
+# SSH key name for PowerVS workspace
+# Only letters, numbers, hyphens, and underscores are allowed (no dots or spaces)
+powervs_ssh_key_name = "<REQUIRED>"  # e.g., "myproject-ssh-key"
 
-# SSH public key content (required if powervs_ssh_key_name is set)
+# SSH public key content
 # Generate with: ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 # Get public key: cat ~/.ssh/id_rsa.pub
-# powervs_ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EA..."
+powervs_ssh_public_key = "<REQUIRED>"  # e.g., "ssh-rsa AAAAB3NzaC1yc2EA..."
 
 ##############################################################################
 # PowerVS Instance Configuration - NOT DEPLOYED

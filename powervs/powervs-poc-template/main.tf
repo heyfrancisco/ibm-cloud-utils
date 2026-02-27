@@ -114,6 +114,7 @@ module "vpn" {
   create_vpn_gateway      = false
   existing_vpn_gateway_id = module.vpc.vpn_gateways_data[0].id
   resource_group_id       = data.ibm_resource_group.vpc_resource_group.id
+  vpn_gateway_mode        = var.vpn_mode
 
   # VPN Connections Configuration with per-connection policies
   vpn_connections = [
@@ -312,11 +313,11 @@ module "powervs_workspace" {
   pi_resource_group_id = data.ibm_resource_group.powervs_resource_group.id
   pi_tags              = var.tags
 
-  # SSH Key Configuration (optional - set powervs_ssh_key_name and powervs_ssh_public_key to create)
-  pi_ssh_public_key = var.powervs_ssh_key_name != null && var.powervs_ssh_public_key != null ? {
+  # SSH Key Configuration
+  pi_ssh_public_key = {
     name  = "${var.prefix}-${replace(replace(var.powervs_ssh_key_name, " ", "-"), ".", "-")}"
     value = var.powervs_ssh_public_key
-  } : null
+  }
 
   # Dynamic Private Subnet Configuration (supports 1-3 subnets)
   pi_private_subnet_1 = length(var.powervs_subnets) >= 1 ? {
