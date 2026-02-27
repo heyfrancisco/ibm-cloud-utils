@@ -156,11 +156,12 @@ module "vpn" {
       ]
 
       # Local Configuration (must be a list)
-      # For route-based VPN, each local entry must have exactly 2 IKE identities
+      # Route mode requires 2 IKE identities (one per gateway member)
+      # Policy mode requires exactly 1 IKE identity
       local_config = [
         {
           cidrs = conn.local_cidrs
-          ike_identities = [
+          ike_identities = var.vpn_mode == "route" ? [
             {
               type  = "ipv4_address"
               value = module.vpc.vpn_gateways_data[0].public_ip_address
@@ -168,6 +169,11 @@ module "vpn" {
             {
               type  = "ipv4_address"
               value = module.vpc.vpn_gateways_data[0].public_ip_address2
+            }
+          ] : [
+            {
+              type  = "ipv4_address"
+              value = module.vpc.vpn_gateways_data[0].public_ip_address
             }
           ]
         }
