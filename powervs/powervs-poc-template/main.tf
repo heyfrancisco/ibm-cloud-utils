@@ -312,11 +312,11 @@ module "powervs_workspace" {
   pi_resource_group_id = data.ibm_resource_group.powervs_resource_group.id
   pi_tags              = var.tags
 
-  # SSH Key Configuration
-  pi_ssh_public_key = {
-    name  = "${var.prefix}-${replace(var.powervs_ssh_key_name, " ", "-")}"
+  # SSH Key Configuration (optional - set powervs_ssh_key_name and powervs_ssh_public_key to create)
+  pi_ssh_public_key = var.powervs_ssh_key_name != null && var.powervs_ssh_public_key != null ? {
+    name  = "${var.prefix}-${replace(replace(var.powervs_ssh_key_name, " ", "-"), ".", "-")}"
     value = var.powervs_ssh_public_key
-  }
+  } : null
 
   # Dynamic Private Subnet Configuration (supports 1-3 subnets)
   pi_private_subnet_1 = length(var.powervs_subnets) >= 1 ? {
