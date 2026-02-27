@@ -39,7 +39,7 @@ module "vpc" {
   subnets = {
     zone-1 = [
       {
-        name           = "subnet-a"
+        name           = "${var.prefix}-subnet-vpc"
         cidr           = var.subnet_cidr
         public_gateway = var.enable_public_gateway
         acl_name       = "${var.prefix}-vpc-acl"
@@ -88,8 +88,8 @@ module "vpc" {
   vpn_gateways = var.enable_vpn_gateway ? [
     {
       name        = "${var.prefix}-vpn-gateway"
-      subnet_name = "subnet-a"
-      mode        = "route"
+      subnet_name = "${var.prefix}-subnet-vpc"
+      mode        = var.vpn_mode
     }
   ] : []
 
@@ -308,7 +308,7 @@ module "powervs_workspace" {
 
   # SSH Key Configuration
   pi_ssh_public_key = {
-    name  = "${var.prefix}-${var.powervs_ssh_key_name}"
+    name  = "${var.prefix}-${replace(var.powervs_ssh_key_name, " ", "-")}"
     value = var.powervs_ssh_public_key
   }
 
