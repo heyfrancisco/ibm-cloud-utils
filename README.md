@@ -9,6 +9,7 @@ A comprehensive collection of IBM Cloud utilities, automation scripts, and infra
 ## 📑 Table of Contents
 
 - [Overview](#-overview)
+- [Documentation](#-documentation)
 - [Architecture & Use Cases](#-architecture--use-cases)
 - [Prerequisites](#-prerequisites)
 - [Best Practices](#-best-practices)
@@ -26,6 +27,23 @@ This repository provides a curated set of tools designed to simplify IBM Cloud o
 - **Safety First**: Cleanup scripts with built-in safeguards
 - **POC-Ready**: Templates optimized for rapid environment setup
 - **Production-Capable**: Scalable configurations for enterprise use
+
+## 📖 Documentation
+
+Comprehensive guides and best practices are available in the [`docs/`](docs/) folder to help you get the most out of IBM Cloud.
+
+### Available Guides
+
+- **[IBM Cloud Good Practices](docs/ibm-cloud-good-practices.md)**: A comprehensive guide covering essential IBM Cloud best practices, including:
+  - Account setup and organization
+  - Security and compliance recommendations
+  - Cost management and optimization strategies
+  - Resource group and access management
+  - Multi-factor authentication (MFA) setup
+  - Billing alerts and spending limits
+  - Support plan considerations
+
+These guides complement the utilities in this repository by providing context and recommendations for building secure, cost-effective, and well-architected solutions on IBM Cloud.
 
 ## 🏗️ Architecture & Use Cases
 
